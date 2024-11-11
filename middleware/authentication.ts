@@ -44,6 +44,7 @@ const authentication = () =>
                 // }
                 if (user) {
                     req.user = user;
+                    console.log(user,"===user===middleware")
                     return next();
                 } else {
                     return next(new UnauthenticatedError(MESSAGES.LOGIN_ERROR_USER_ACCESS_TOKEN_INVALID));

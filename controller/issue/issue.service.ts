@@ -232,6 +232,7 @@ class IssueService {
    */
   async createIssue(issueRequest: IssueRequest, userDetails: any) {
     try {
+    console.log(userDetails,"===userDetails===service")
       const { context: requestContext, message }: IssueRequest = issueRequest;
       const issue: IssueProps = message.issue;
       const contextFactory = new ContextFactory();
@@ -326,7 +327,7 @@ class IssueService {
       if (bppResponse?.context) {
         await this.createIssueInDatabase(
           issueRequests,
-          userDetails?.user,
+          userDetails,
           bppResponse?.context?.message_id,
           bppResponse?.context?.transaction_id,
           requestContext?.domain
