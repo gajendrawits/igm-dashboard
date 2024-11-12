@@ -31,7 +31,7 @@ class IssueController {
    */
   getIssuesList(req: any, res: Response, next: NextFunction) {
     const { query = {}, user } = req;
-    console.log(user,"===user=== controller")
+    console.log(user,"===user=== controller",query)
 
     issueService
       .getIssuesList(user, query)

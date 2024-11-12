@@ -357,12 +357,12 @@ class IssueService {
       let { limit = 10, pageNumber = 1 } = params;
 
       let skip = (pageNumber - 1) * limit;
-      const issues = await Issue.find({ userId: user?.user })
+      const issues = await Issue.find({ userId: user })
         .sort({ created_at: -1 })
         .limit(limit)
         .skip(skip);
       const totalCount = await Issue.countDocuments({
-        userId: user?.user,
+        userId: user,
       });
 
       return { issues, totalCount };
@@ -380,6 +380,7 @@ class IssueService {
   async getIssuesList(user: any, params: IParamProps) {
     try {
       const { issues, totalCount } = await this.findIssues(user, params);
+      console.log(JSON.stringify(issues),"===controller issues===")
       if (!issues.length) {
         return {
           error: {

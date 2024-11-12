@@ -14,6 +14,7 @@ console.log(secret,"==secret");
 
 const tokenExtractor = (req: Request): any => {
     const token = req.get(HEADERS.ACCESS_TOKEN) || null;
+    console.log(token,"===token====")
     if (!token) {
         throw new UnauthenticatedError(
             MESSAGES.LOGIN_ERROR_USER_ACCESS_TOKEN_INVALID
