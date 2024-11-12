@@ -2,7 +2,7 @@ name: Deployment
 
 on:
   push:
-    branches: ["main"]  #branchname
+    branches: ["main"]  #branch name
 
 jobs:
   use-reusable-workflow:
