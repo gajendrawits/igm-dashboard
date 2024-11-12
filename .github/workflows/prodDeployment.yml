@@ -8,7 +8,7 @@ jobs:
   use-reusable-workflow:
     uses: navya-app/shared-cicd-pipeline/.github/workflows/deployment.yml@main  #Reference to the reusable workflow
     with:  # Pass inputs
-      service_name: ondc-buyer-app-services-release-igm-service-external
+      service_name: ondc-ref-app-igm
       branch_name: main
       environment: prod
     secrets:  # Pass secrets
