@@ -58,22 +58,31 @@ class IssueController {
    */
   getIssue(req: any, res: Response, next: NextFunction) {
     const { query = {} } = req;
-
-    issueService
-      .getSingleIssue(query?.transactionId)
-      .then((response: any) => {
-        if (!response.error) {
-          res.json({ ...response });
-        } else
-          res.status(400).json({
-            totalCount: 0,
-            issues: [],
-            error: response.error,
+    query?.transactionId
+      ? issueService
+          .getSingleIssue(query?.transactionId)
+          .then((response: any) => {
+            if (response.error) {
+              res.json({
+                error: response.error,
+              });
+            } else res.status(200).json(response.issue);
+          })
+          .catch((err: any) => {
+            next(err);
+          })
+      : issueService
+          .getIssueByOrderID(query?.orderId)
+          .then((response: any) => {
+            if (response.error) {
+              res.json({
+                error: response.error,
+              });
+            } else res.status(200).json(response.issue);
+          })
+          .catch((err: any) => {
+            next(err);
           });
-      })
-      .catch((err: any) => {
-        next(err);
-      });
   }
 
   /**

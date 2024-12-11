@@ -1,16 +1,18 @@
 import express, { Application, Request, Response } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import loadEnvVariables from "./utils/envHelper";
+// import loadEnvVariables from "./utils/envHelper";
 import issueRoutes from "./routes/issue";
 import issue_statusRoutes from "./routes/issue_status";
 import sseRoutes from "./routes/sse";
+import dotenv from "dotenv";
 
 const createServer = (): express.Application => {
   const app: Application = express();
+  dotenv.config()
 
   // initialize environment variables
-  loadEnvVariables();
+  // loadEnvVariables();
   // Body parsing Middleware
   app.use(express.json({ limit: "50mb" }));
   app.use(bodyParser.json());

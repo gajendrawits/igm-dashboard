@@ -6,7 +6,7 @@ import IssueModel from "../database/issue.model";
  */
 const addOrUpdateIssueWithtransactionId = async (
   transactionId: string | any,
-  issueSchema: Record <any,any> = {}
+  issueSchema: Record<any, any> = {}
 ) => {
   return await IssueModel.findOneAndUpdate(
     {
@@ -14,7 +14,6 @@ const addOrUpdateIssueWithtransactionId = async (
     },
     {
       ...issueSchema,
-
     },
     { upsert: true }
   );
@@ -34,4 +33,26 @@ const getIssueByTransactionId = async (transactionId: string) => {
   } else return issue?.[0];
 };
 
-export { addOrUpdateIssueWithtransactionId, getIssueByTransactionId };
+const getIssueByOrderId = async (orderId: string) => {
+  const issue: any = await IssueModel.find({
+    "order_details.id": orderId,
+  });
+
+  if (!(issue || issue.length)) {
+    return {
+      status: 404,
+      name: "NO_RECORD_FOUND_ERROR",
+      message: "Record not found",
+    };
+  } else
+    return {
+      issues:issue,
+      issueCount: issue.length,
+    };
+};
+
+export {
+  addOrUpdateIssueWithtransactionId,
+  getIssueByTransactionId,
+  getIssueByOrderId,
+};

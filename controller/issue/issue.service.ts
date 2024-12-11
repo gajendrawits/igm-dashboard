@@ -17,6 +17,7 @@ import { onIssueOrder } from "../../utils/protocolApis";
 import {
   addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
+  getIssueByOrderId
 } from "../../utils/dbservice";
 
 const bppIssueService = new BppIssueService();
@@ -469,6 +470,21 @@ class IssueService {
 
       if (issue) {
         return { issueExistance: true, issue };
+      } else {
+        return { issueExistance: false };
+      }
+    } catch (err: any) {
+      throw err;
+    }
+  }
+  async getIssueByOrderID(orderID: string) {
+    try {
+      if (!orderID) throw new Error("Issue not found with this orderID Id");
+
+      const issue: any = await getIssueByOrderId(orderID);
+
+      if (issue) {
+        return { issue };
       } else {
         return { issueExistance: false };
       }

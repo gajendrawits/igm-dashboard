@@ -3,6 +3,9 @@ import UnauthenticatedError from '../../../lib/error/unauthenticated.error';
 import { MESSAGES } from '../../../utils/messages';
 import { HEADERS } from '../../../utils/constants';
 import { Request } from 'express';
+import dotenv from "dotenv";
+
+dotenv.config()
 
 const JwtStrategy = passportJWT.Strategy;
 console.log(process.env.JWT_TOKEN_PUBLIC_KEY,"=process.env.JWT_TOKEN_PUBLIC_KEY=")
