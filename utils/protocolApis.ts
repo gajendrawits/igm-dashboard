@@ -1,6 +1,7 @@
 import HttpRequest from "./httpRequest";
 import PROTOCOL_API_URLS from "../shared/protocolRoutes";
 import { IssueRequest } from "../interfaces/bpp_issue";
+import { logger } from "../shared/logger";
 
 /**
  * on Issue
@@ -41,6 +42,7 @@ const protocolIssue = async (data: IssueRequest) => {
  * @returns
  */
 const protocolIssueStatus = async (data: any) => {
+  logger.info("Issue status request payload", JSON.stringify(data));
   const apiCall = new HttpRequest(
     process.env.PROTOCOL_BASE_URL,
     PROTOCOL_API_URLS.ISSUE_STATUS,
@@ -51,6 +53,8 @@ const protocolIssueStatus = async (data: any) => {
   );
 
   const result = await apiCall.send();
+
+  logger.info("IssueStatus seller response", JSON.stringify(result.data));
   return result.data;
 };
 
@@ -65,8 +69,12 @@ const onIssueStatus = async (messageId: string) => {
     "get",
     { requestType: "on_issue_status", messageId }
   );
-
   const result = await apiCall.send();
+
+  logger.info(
+    "OnIssueStats -> Seller response for On Issue status",
+    JSON.stringify(result.data)
+  );
   return result.data;
 };
 
@@ -83,6 +91,10 @@ const onIssueOrder = async (messageId: string) => {
   );
 
   const result = await apiCall.send();
+  logger.info(
+    "onIssue -> Seller response for On Issue status",
+    JSON.stringify(result.data)
+  );
   return result.data;
 };
 
@@ -99,6 +111,10 @@ const onIssue_status = async (messageId: any) => {
   );
 
   const result = await apiCall.send();
+  logger.info(
+    "OnIssueStats -> Seller response for On Issue status",
+    JSON.stringify(result.data)
+  );
   return result.data;
 };
 
