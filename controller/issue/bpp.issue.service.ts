@@ -7,6 +7,7 @@ import {
   Response,
 } from "../../interfaces/issue";
 import { Context, IssueRequest } from "../../interfaces/bpp_issue";
+import { logger } from "../../shared/logger";
 class BppIssueService {
   /**
    * bpp issue
@@ -70,9 +71,24 @@ class BppIssueService {
         },
       };
 
+      logger.info(
+        "Issue request payload for issue Api",
+        JSON.stringify(issueRequest)
+      );
+
       const response: Response = await protocolIssue(issueRequest);
+
+      logger.info(
+        "seller response for Issue Api",
+        JSON.stringify({ context: context, message: response.message })
+      );
+
       return { context: context, message: response.message };
-    } catch (err) {
+    } catch (err: any) {
+      logger.info(
+        "Error while raising issue for Issue Api",
+        JSON.stringify({ context: context, message: err.message })
+      );
       throw err;
     }
   }
@@ -95,9 +111,20 @@ class BppIssueService {
         },
       };
 
+      logger.info(
+        "Close or Escalation payload ",
+        JSON.stringify({ context: context, message: issueRequest.message })
+      );
+
       const response: any = await protocolIssue(issueRequest);
+
+      logger.info(
+        "Seller response against Close or Escalation payload ",
+        JSON.stringify({ context: context, message: issueRequest.message })
+      );
       return { context: context, message: response?.message };
     } catch (err) {
+      logger.info("in catch Close or Escalation payload ", JSON.stringify(err));
       throw err;
     }
   }

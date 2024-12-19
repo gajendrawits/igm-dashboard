@@ -5,19 +5,15 @@ import BppIssueService from "./bpp.issue.service";
 import Issue from "../../database/issue.model";
 import { logger } from "../../shared/logger";
 import getSignedUrlForUpload from "../../utils/s3Util";
-import fs from 'fs';
-import path from 'path';
-import {
-  IParamProps,
-  IssueProps,
-  IssueRequest,
-} from "../../interfaces/issue";
+import fs from "fs";
+import path from "path";
+import { IParamProps, IssueProps, IssueRequest } from "../../interfaces/issue";
 import BugzillaService from "../../controller/bugzilla/bugzilla.service";
 import { onIssueOrder } from "../../utils/protocolApis";
 import {
   addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
-  getIssueByOrderId
+  getIssueByOrderId,
 } from "../../utils/dbservice";
 
 const bppIssueService = new BppIssueService();
@@ -51,7 +47,7 @@ class IssueService {
       // if (matches.length !== 3) {
       //   throw new Error("Invalid input string");
       // }
-      const cleanedBase64 = base64.replace(/\s+/g, '');
+      const cleanedBase64 = base64.replace(/\s+/g, "");
       const matches = cleanedBase64.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
       if (!matches || matches.length !== 3) {
         throw new Error("Invalid input string");
@@ -99,89 +95,90 @@ class IssueService {
 
   async uploadImageS3(base64: string) {
     try {
-        // Remove any whitespace from the base64 string
-        const cleanedBase64 = base64.replace(/\s+/g, '');
+      // Remove any whitespace from the base64 string
+      const cleanedBase64 = base64.replace(/\s+/g, "");
 
-        // Match against the base64 data URL format
-        const matches = cleanedBase64.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
-        if (!matches || matches.length !== 3) {
-            throw new Error("Invalid input string");
-        }
-        
-        const contentType = matches[1];
-        // const base64Data = matches[2];
+      // Match against the base64 data URL format
+      const matches = cleanedBase64.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+      if (!matches || matches.length !== 3) {
+        throw new Error("Invalid input string");
+      }
 
-        // Convert base64 string to a binary Blob
-        // const b64toBlob = (b64Data: string, contentType: string) => {
-        //     const byteCharacters = atob(b64Data);
-        //     const byteNumbers = new Uint8Array(byteCharacters.length);
-        //     for (let i = 0; i < byteCharacters.length; i++) {
-        //         byteNumbers[i] = byteCharacters.charCodeAt(i);
-        //     }
-        //     return new Blob([byteNumbers], { type: contentType });
-        // };
+      const contentType = matches[1];
+      // const base64Data = matches[2];
 
-        // const blob = b64toBlob(base64Data, contentType);
+      // Convert base64 string to a binary Blob
+      // const b64toBlob = (b64Data: string, contentType: string) => {
+      //     const byteCharacters = atob(b64Data);
+      //     const byteNumbers = new Uint8Array(byteCharacters.length);
+      //     for (let i = 0; i < byteCharacters.length; i++) {
+      //         byteNumbers[i] = byteCharacters.charCodeAt(i);
+      //     }
+      //     return new Blob([byteNumbers], { type: contentType });
+      // };
 
-        // Get signed URL for upload
-        const resp = await getSignedUrlForUpload({
-            path: uuidv4(),
-            filetype: contentType.split('/')[1], // Extract file type from content type
-        });
-        // const uploadResponse = await fetch(resp?.urls, {
-        //     method: "PUT",
-        //     headers: { "Content-Type": contentType },
-        //     body: blob,
-        // });
+      // const blob = b64toBlob(base64Data, contentType);
 
-        // // Check if the upload was successful
-        // if (!uploadResponse.ok) {
-        //     throw new Error(`Upload failed: ${uploadResponse.statusText}`);
-        // }
+      // Get signed URL for upload
+      const resp = await getSignedUrlForUpload({
+        path: uuidv4(),
+        filetype: contentType.split("/")[1], // Extract file type from content type
+      });
+      // const uploadResponse = await fetch(resp?.urls, {
+      //     method: "PUT",
+      //     headers: { "Content-Type": contentType },
+      //     body: blob,
+      // });
 
-        return resp?.publicUrl; // Return the public URL of the uploaded image
+      // // Check if the upload was successful
+      // if (!uploadResponse.ok) {
+      //     throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+      // }
+
+      return resp?.publicUrl; // Return the public URL of the uploaded image
     } catch (err) {
-        console.error("Error uploading image:", err);
-        throw err; // Re-throw the error for handling upstream
-    }
-}
-
-  async uploadImage(base64: string) {
-    try {
-        const cleanedBase64 = base64.replace(/\s+/g, '');
-
-        const matches = cleanedBase64.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
-        if (!matches || matches.length !== 3) {
-            throw new Error("Invalid input string");
-        }
-        
-        const contentType = matches[1];
-        const base64Data = matches[2];
-
-        const buffer = Buffer.from(base64Data, 'base64');
-        const directoryPath = '/app/images';
-
-        const fileExtension = contentType.split('/')[1];
-        const fileName = `${uuidv4()}.${fileExtension}`;
-        const filePath = path.join(directoryPath, fileName);
-
-        if (!fs.existsSync(directoryPath)) {
-            fs.mkdirSync(directoryPath, { recursive: true });
-        }
-
-        fs.writeFileSync(filePath, buffer);
-
-        const publicUrl = `images/${fileName}`;
-        console.log("Image saved at:", `${process.env.REACT_APP_BASE_URL}${publicUrl}`);
-
-        return `${process.env.REACT_APP_BASE_URL}${publicUrl}`;
-    } catch (err) {
-        console.error("Error uploading image:", err);
-        throw err; 
+      console.error("Error uploading image:", err);
+      throw err; // Re-throw the error for handling upstream
     }
   }
 
+  async uploadImage(base64: string) {
+    try {
+      const cleanedBase64 = base64.replace(/\s+/g, "");
 
+      const matches = cleanedBase64.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+      if (!matches || matches.length !== 3) {
+        throw new Error("Invalid input string");
+      }
+
+      const contentType = matches[1];
+      const base64Data = matches[2];
+
+      const buffer = Buffer.from(base64Data, "base64");
+      const directoryPath = "/app/images";
+
+      const fileExtension = contentType.split("/")[1];
+      const fileName = `${uuidv4()}.${fileExtension}`;
+      const filePath = path.join(directoryPath, fileName);
+
+      if (!fs.existsSync(directoryPath)) {
+        fs.mkdirSync(directoryPath, { recursive: true });
+      }
+
+      fs.writeFileSync(filePath, buffer);
+
+      const publicUrl = `images/${fileName}`;
+      console.log(
+        "Image saved at:",
+        `${process.env.REACT_APP_BASE_URL}${publicUrl}`
+      );
+
+      return `${process.env.REACT_APP_BASE_URL}${publicUrl}`;
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      throw err;
+    }
+  }
 
   async createIssueInDatabase(
     issue: IssueProps,
@@ -233,7 +230,7 @@ class IssueService {
    */
   async createIssue(issueRequest: IssueRequest, userDetails: any) {
     try {
-    console.log(userDetails,"===userDetails===service")
+      console.log(userDetails, "===userDetails===service");
       const { context: requestContext, message }: IssueRequest = issueRequest;
       const issue: IssueProps = message.issue;
       const contextFactory = new ContextFactory();
@@ -303,16 +300,17 @@ class IssueService {
       //   ...imageUri
       // );
 
-
       if (issue?.description?.images?.length) {
-          const uploadPromises = issue.description.images.map(async (item: string) => {
-              const imageLink = await this.uploadImage(item);
-              return imageLink; // Return the image link from the map
-          });
+        const uploadPromises = issue.description.images.map(
+          async (item: string) => {
+            const imageLink = await this.uploadImage(item);
+            return imageLink; // Return the image link from the map
+          }
+        );
 
-          const uploadedImageLinks = await Promise.all(uploadPromises);
-          // Replace original images with uploaded image links
-          issue.description.images = uploadedImageLinks; // Directly assign the uploaded links
+        const uploadedImageLinks = await Promise.all(uploadPromises);
+        // Replace original images with uploaded image links
+        issue.description.images = uploadedImageLinks; // Directly assign the uploaded links
       }
 
       const issueRequests = await this.addComplainantAction(
@@ -320,6 +318,7 @@ class IssueService {
         requestContext.domain
       );
       issueRequests.issue_type = "ISSUE";
+
       const bppResponse: any = await bppIssueService.issue(
         context,
         issueRequests
@@ -335,7 +334,11 @@ class IssueService {
         );
         logger.info("Created issue in database");
       }
-      console.log(process.env.BUGZILLA_API_KEY,"===",process.env.SELECTED_ISSUE_CRM)
+      console.log(
+        process.env.BUGZILLA_API_KEY,
+        "===",
+        process.env.SELECTED_ISSUE_CRM
+      );
       if (
         process.env.BUGZILLA_API_KEY ||
         process.env.SELECTED_ISSUE_CRM === TRUDESK
@@ -349,6 +352,7 @@ class IssueService {
       }
       return bppResponse;
     } catch (err) {
+      logger.info("Issue while creating", JSON.stringify(err));
       throw err;
     }
   }
@@ -368,6 +372,7 @@ class IssueService {
 
       return { issues, totalCount };
     } catch (err) {
+      logger.info("Issue in finding issue", JSON.stringify(err));
       throw err;
     }
   }
@@ -381,7 +386,7 @@ class IssueService {
   async getIssuesList(user: any, params: IParamProps) {
     try {
       const { issues, totalCount } = await this.findIssues(user, params);
-      console.log(JSON.stringify(issues),"===controller issues===")
+      console.log(JSON.stringify(issues), "===controller issues===");
       if (!issues.length) {
         return {
           error: {
@@ -396,6 +401,7 @@ class IssueService {
         };
       }
     } catch (err) {
+      logger.info("Issue in getting all issue", JSON.stringify(err));
       throw err;
     }
   }
@@ -453,6 +459,7 @@ class IssueService {
         return this.transform(protocolIssueResponse?.[0]);
       }
     } catch (err) {
+      logger.info("Issue in on_issuee", JSON.stringify(err));
       throw err;
     }
   }
@@ -474,12 +481,16 @@ class IssueService {
         return { issueExistance: false };
       }
     } catch (err: any) {
+      logger.info(
+        "Issue in getSingleIssue by transaction id",
+        JSON.stringify(err)
+      );
       throw err;
     }
   }
   async getIssueByOrderID(orderID: string) {
     try {
-      if (!orderID) throw new Error("Issue not found with this orderID Id");
+      if (!orderID) return { message: "Issue not found with this orderID Id" };
 
       const issue: any = await getIssueByOrderId(orderID);
 
@@ -489,6 +500,10 @@ class IssueService {
         return { issueExistance: false };
       }
     } catch (err: any) {
+      logger.info(
+        "Issue in getSingleIssue by getIssueByOrderID",
+        JSON.stringify(err)
+      );
       throw err;
     }
   }
