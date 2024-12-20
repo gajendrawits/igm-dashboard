@@ -1,5 +1,6 @@
 import { Response, NextFunction } from "express";
 import IssueService from "./issue.service";
+import { logger } from "../../shared/logger";
 
 const issueService = new IssueService();
 class IssueController {
@@ -12,7 +13,7 @@ class IssueController {
 
   createIssue(req: any, res: Response, next: NextFunction) {
     const { body: request, user: userDetails } = req;
-    console.log(userDetails, "===userDetails=== controller");
+    logger.info(`${userDetails} ===userDetails=== controller`);
     issueService
       .createIssue(request, userDetails)
       .then((response) => {
@@ -31,7 +32,7 @@ class IssueController {
    */
   getIssuesList(req: any, res: Response, next: NextFunction) {
     const { query = {}, user } = req;
-    console.log(user, "===user=== controller", query);
+    logger.info(`${user}, "===user=== controller", ${query}`);
 
     issueService
       .getIssuesList(user, query)
