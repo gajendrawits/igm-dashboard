@@ -71,7 +71,6 @@ class BppIssueService {
         },
       };
 
-      console.log(issueRequest);
       logger.info(
         `Issue request payload for issue Api: ${JSON.stringify(issueRequest)}`
       );

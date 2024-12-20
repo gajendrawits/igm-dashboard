@@ -11,10 +11,12 @@ class BugzillaService {
     issue_Actions: IssueActions
   ) {
     try {
-      const itemIds = issue?.order_details?.items.map(item => item.id).join(', ');
+      const itemIds = issue?.order_details?.items
+        .map((item) => item.id)
+        .join(", ");
 
       const payload = {
-        domain:domain,
+        domain: domain,
         product: issue?.order_details?.items?.[0]?.product?.descriptor?.name,
         issue_desc: issue?.description?.short_desc,
         summary: issue?.description?.long_desc,
@@ -27,9 +29,11 @@ class BugzillaService {
         issue_sub_category: issue?.sub_category || "",
         issue_sub_category_long_desc: issue?.description?.long_desc || "",
         network_order_id: issue?.order_details?.id || "",
-        network_item_id: itemIds || ""
+        network_item_id: itemIds || "",
       };
-      console.log(process.env.BUGZILLA_SERVICE_URI,"====process.env.BUGZILLA_SERVICE_URI==")
+      logger.info(
+        `${process.env.BUGZILLA_SERVICE_URI},====process.env.BUGZILLA_SERVICE_URI==`
+      );
       const apiCall = new HttpRequest(
         process.env.BUGZILLA_SERVICE_URI,
         "/create",
@@ -44,8 +48,10 @@ class BugzillaService {
         return result.data;
       }
     } catch (error: any) {
-      console.log("Error in creating issue in Bugzilla ", error?.message || error);
-      logger.info("Error in creating issue in Bugzilla ", error?.message || error);
+      logger.info(
+        `Error in creating issue in Bugzilla ,
+       ${error?.message || error}`
+      );
       return error;
     }
   }
@@ -70,7 +76,6 @@ class BugzillaService {
         logger.info("Issue updated in Bugzilla");
       }
     } catch (error) {
-      console.log(error,"error===")
       logger.info("Error in updating issue in Bugzilla", error);
       return error;
     }

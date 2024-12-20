@@ -67,13 +67,13 @@ export const checkIfIssueAlreadyExist = async (
         });
     
         if (issues.length > 0) {
-        res.status(400).json({
+        return res.status(400).json({
             status: 400,
             name: "BAD_REQUEST",
             message: "Issue already exists with this sub category",
         });
         }
-        next();
+       return next();
     } catch (error) {
         logger.error("Error checking if issue exists:", error);
         res.status(500).json({

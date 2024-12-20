@@ -168,9 +168,9 @@ class IssueService {
       fs.writeFileSync(filePath, buffer);
 
       const publicUrl = `images/${fileName}`;
-      console.log(
-        "Image saved at:",
-        `${process.env.REACT_APP_BASE_URL}${publicUrl}`
+      logger.info(
+        `Image saved at:,
+       ${process.env.REACT_APP_BASE_URL}${publicUrl}`
       );
 
       return `${process.env.REACT_APP_BASE_URL}${publicUrl}`;
@@ -389,7 +389,7 @@ class IssueService {
   async getIssuesList(user: any, params: IParamProps) {
     try {
       const { issues, totalCount } = await this.findIssues(user, params);
-      console.log(JSON.stringify(issues), "===controller issues===");
+      logger.info(`${JSON.stringify(issues)}, ===controller issues===`);
       if (!issues.length) {
         return {
           error: {
@@ -513,7 +513,7 @@ class IssueService {
   async getAllIssuesList() {
     try {
       const issues = await Issue.find();
-      console.log(JSON.stringify(issues), "===controller issues===");
+      logger.info(`${JSON.stringify(issues)}, ===controller issues===`);
       if (!issues.length) {
         return {
           error: {
