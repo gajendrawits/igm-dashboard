@@ -12,7 +12,7 @@ class IssueController {
 
   createIssue(req: any, res: Response, next: NextFunction) {
     const { body: request, user: userDetails } = req;
-    console.log(userDetails,"===userDetails=== controller")
+    console.log(userDetails, "===userDetails=== controller");
     issueService
       .createIssue(request, userDetails)
       .then((response) => {
@@ -31,7 +31,7 @@ class IssueController {
    */
   getIssuesList(req: any, res: Response, next: NextFunction) {
     const { query = {}, user } = req;
-    console.log(user,"===user=== controller",query)
+    console.log(user, "===user=== controller", query);
 
     issueService
       .getIssuesList(user, query)
@@ -99,6 +99,29 @@ class IssueController {
       .onIssueOrder(messageId)
       .then((issue: any) => {
         res.json(issue);
+      })
+      .catch((err: any) => {
+        next(err);
+      });
+  }
+
+  getAllIssuesList(req: any, res: Response, next: NextFunction) {
+    const secret = req.body.secret;
+    if (secret !== "123456") {
+      res.json({ message: "Request secret is matching" });
+    }
+
+    issueService
+      .getAllIssuesList()
+      .then((response: any) => {
+        if (!response.error) {
+          res.json({ ...response });
+        } else
+          res.status(200).json({
+            totalCount: 0,
+            issues: [],
+            error: response.error,
+          });
       })
       .catch((err: any) => {
         next(err);

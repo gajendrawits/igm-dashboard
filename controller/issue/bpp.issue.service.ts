@@ -71,24 +71,29 @@ class BppIssueService {
         },
       };
 
+      console.log(issueRequest);
       logger.info(
-        "Issue request payload for issue Api",
-        JSON.stringify(issueRequest)
+        `Issue request payload for issue Api: ${JSON.stringify(issueRequest)}`
       );
 
       const response: Response = await protocolIssue(issueRequest);
 
       logger.info(
-        "seller response for Issue Api",
-        JSON.stringify({ context: context, message: response.message })
+        `seller response for Issue Api: ${JSON.stringify({
+          context: context,
+          message: response.message,
+        })}`
       );
 
       return { context: context, message: response.message };
     } catch (err: any) {
       logger.info(
-        "Error while raising issue for Issue Api",
-        JSON.stringify({ context: context, message: err.message })
+        `Error while raising issue for Issue Api: ${JSON.stringify({
+          context: context,
+          message: err.code,
+        })}`
       );
+
       throw err;
     }
   }
@@ -112,19 +117,27 @@ class BppIssueService {
       };
 
       logger.info(
-        "Close or Escalation payload ",
-        JSON.stringify({ context: context, message: issueRequest.message })
+        `Close or Escalation payload: ${JSON.stringify({
+          context: context,
+          message: issueRequest.message,
+        })}`
       );
 
       const response: any = await protocolIssue(issueRequest);
 
       logger.info(
-        "Seller response against Close or Escalation payload ",
-        JSON.stringify({ context: context, message: issueRequest.message })
+        `Seller response against Close or Escalation payload: ${JSON.stringify({
+          context: context,
+          message: response.message,
+          response: response,
+        })}`
       );
+
       return { context: context, message: response?.message };
     } catch (err) {
-      logger.info("in catch Close or Escalation payload ", JSON.stringify(err));
+      logger.info(
+        `in catch Close or Escalation payload: ${JSON.stringify(err)}`
+      );
       throw err;
     }
   }

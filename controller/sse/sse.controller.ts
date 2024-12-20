@@ -57,7 +57,7 @@ class SseController {
   onStatus(req: Request, res: Response, next: NextFunction) {
     const { body: response } = req;
     const { messageId } = response;
-console.log("Response before issueStatusService being hit",response)
+    logger.info(`Response before issueStatusService being hit, ${response}`);
 
     issueStatusService
       .onIssueStatus(messageId)
@@ -65,7 +65,7 @@ console.log("Response before issueStatusService being hit",response)
         logger.info("Updated Issue in Unsolicited Calls");
       })
       .catch((err) => {
-        console.log("Error in Unsolicited calls", JSON.stringify(err));
+        logger.info(`Error in Unsolicited calls", ${JSON.stringify(err)}`);
       });
 
     sseProtocolService
@@ -74,7 +74,7 @@ console.log("Response before issueStatusService being hit",response)
         res.json(result);
       })
       .catch((err) => {
-	console.log("Before going next:",err)
+        logger.info(`Before going next:, ${err}`);
         next(err);
       });
   }

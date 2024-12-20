@@ -175,7 +175,7 @@ class IssueService {
 
       return `${process.env.REACT_APP_BASE_URL}${publicUrl}`;
     } catch (err) {
-      console.error("Error uploading image:", err);
+      logger.info(`Error uploading image: ${err}`);
       throw err;
     }
   }
@@ -230,7 +230,7 @@ class IssueService {
    */
   async createIssue(issueRequest: IssueRequest, userDetails: any) {
     try {
-      console.log(userDetails, "===userDetails===service");
+      logger.info(`===userDetails===service ${userDetails}`);
       const { context: requestContext, message }: IssueRequest = issueRequest;
       const issue: IssueProps = message.issue;
       const contextFactory = new ContextFactory();
@@ -334,10 +334,10 @@ class IssueService {
         );
         logger.info("Created issue in database");
       }
-      console.log(
-        process.env.BUGZILLA_API_KEY,
+      logger.info(
+        ` ${process.env.BUGZILLA_API_KEY},
         "===",
-        process.env.SELECTED_ISSUE_CRM
+        ${process.env.SELECTED_ISSUE_CRM}`
       );
       if (
         process.env.BUGZILLA_API_KEY ||
@@ -351,8 +351,11 @@ class IssueService {
         );
       }
       return bppResponse;
-    } catch (err) {
-      logger.info("Issue while creating", JSON.stringify(err));
+    } catch (err: any) {
+      logger.info(`Issue while creating issue: ${JSON.stringify(err)}`);
+      logger.info(
+        `Error status while creating issue: ${JSON.stringify(err.code)}`
+      );
       throw err;
     }
   }
@@ -372,7 +375,7 @@ class IssueService {
 
       return { issues, totalCount };
     } catch (err) {
-      logger.info("Issue in finding issue", JSON.stringify(err));
+      logger.info(`Issue in finding issue,${JSON.stringify(err)}`);
       throw err;
     }
   }
@@ -401,7 +404,7 @@ class IssueService {
         };
       }
     } catch (err) {
-      logger.info("Issue in getting all issue", JSON.stringify(err));
+      logger.info(`Issue in getting all issue, ${JSON.stringify(err)}`);
       throw err;
     }
   }
@@ -459,7 +462,7 @@ class IssueService {
         return this.transform(protocolIssueResponse?.[0]);
       }
     } catch (err) {
-      logger.info("Issue in on_issuee", JSON.stringify(err));
+      logger.info(`Issue in on_issuee, ${JSON.stringify(err)}`);
       throw err;
     }
   }
@@ -481,10 +484,10 @@ class IssueService {
         return { issueExistance: false };
       }
     } catch (err: any) {
-      logger.info(
+      logger.info(`
         "Issue in getSingleIssue by transaction id",
-        JSON.stringify(err)
-      );
+        ${JSON.stringify(err)}
+      `);
       throw err;
     }
   }
@@ -501,9 +504,31 @@ class IssueService {
       }
     } catch (err: any) {
       logger.info(
-        "Issue in getSingleIssue by getIssueByOrderID",
-        JSON.stringify(err)
+        `Issue in getSingleIssue by getIssueByOrderID: ${JSON.stringify(err)}`
       );
+      throw err;
+    }
+  }
+
+  async getAllIssuesList() {
+    try {
+      const issues = await Issue.find();
+      console.log(JSON.stringify(issues), "===controller issues===");
+      if (!issues.length) {
+        return {
+          error: {
+            message: "No data found",
+            status: "BAP_010",
+          },
+        };
+      } else {
+        return {
+          totalCount: issues.length,
+          issues: issues,
+        };
+      }
+    } catch (err) {
+      logger.info(`Issue in getting all issue, ${JSON.stringify(err)}`);
       throw err;
     }
   }
