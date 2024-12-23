@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response, NextFunction, Request } from "express";
 import IssueService from "./issue.service";
 import { logger } from "../../shared/logger";
 
@@ -106,8 +106,13 @@ class IssueController {
       });
   }
 
-  async getAllIssuesList(res: Response) {
-    const response: any = await issueService.getAllIssuesList();
+  async getAllIssuesList(req: Request, res: Response, _next: NextFunction) {
+    const { limit, pageNumber } = req.params;
+
+    const response: any = await issueService.getAllIssuesList({
+      limit: parseInt(limit),
+      pageNumber: parseInt(pageNumber),
+    });
     console.log(
       "🚀 ~ file: issue.controller.ts:111 ~ IssueController ~ getAllIssuesList ~ response:",
       response

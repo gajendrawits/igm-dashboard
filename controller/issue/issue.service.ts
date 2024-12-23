@@ -389,7 +389,9 @@ class IssueService {
   async getIssuesList(user: any, params: IParamProps) {
     try {
       const { issues, totalCount } = await this.findIssues(user, params);
-      logger.info(` ===getIssuesList service issues=== ${JSON.stringify(issues)}`);
+      logger.info(
+        ` ===getIssuesList service issues=== ${JSON.stringify(issues)}`
+      );
       if (!issues.length) {
         return {
           error: {
@@ -404,7 +406,9 @@ class IssueService {
         };
       }
     } catch (err) {
-      logger.info(`getIssuesList Issue in getting all issue, ${JSON.stringify(err)}`);
+      logger.info(
+        `getIssuesList Issue in getting all issue, ${JSON.stringify(err)}`
+      );
       throw err;
     }
   }
@@ -510,10 +514,17 @@ class IssueService {
     }
   }
 
-  async getAllIssuesList() {
+  async getAllIssuesList(params: IParamProps) {
     try {
-      const issues = await Issue.find();
-      logger.info(`${JSON.stringify(issues)}, ===controller issues===`);
+      let { limit = 10, pageNumber = 1 } = params;
+
+      let skip = (pageNumber - 1) * limit;
+      const issues = await Issue.find()
+        .sort({ created_at: -1 })
+        .limit(limit)
+        .skip(skip);
+
+      logger.info(`getAllIssuesList ${JSON.stringify(issues)}`);
       if (!issues.length) {
         return {
           error: {
