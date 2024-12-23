@@ -106,13 +106,7 @@ class IssueController {
       });
   }
 
-  async getAllIssuesList(req: Request, res: Response) {
-    const secret = req.body.secret;
-
-    if (secret !== "123456") {
-      return res.json({ message: "Request secret is matching" });
-    }
-
+  async getAllIssuesList(res: Response) {
     const response: any = await issueService.getAllIssuesList();
 
     return res.status(200).send({
