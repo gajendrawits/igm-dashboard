@@ -389,7 +389,7 @@ class IssueService {
   async getIssuesList(user: any, params: IParamProps) {
     try {
       const { issues, totalCount } = await this.findIssues(user, params);
-      logger.info(`${JSON.stringify(issues)}, ===controller issues===`);
+      logger.info(` ===getIssuesList service issues=== ${JSON.stringify(issues)}`);
       if (!issues.length) {
         return {
           error: {
@@ -404,7 +404,7 @@ class IssueService {
         };
       }
     } catch (err) {
-      logger.info(`Issue in getting all issue, ${JSON.stringify(err)}`);
+      logger.info(`getIssuesList Issue in getting all issue, ${JSON.stringify(err)}`);
       throw err;
     }
   }
