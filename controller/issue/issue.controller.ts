@@ -1,4 +1,4 @@
-import { Response, NextFunction, Request } from "express";
+import { Response, NextFunction } from "express";
 import IssueService from "./issue.service";
 import { logger } from "../../shared/logger";
 
