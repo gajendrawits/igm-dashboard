@@ -1,4 +1,4 @@
-import { Response, Request, NextFunction } from "express";
+import { Response, NextFunction, Request } from "express";
 import IssueService from "./issue.service";
 import { logger } from "../../shared/logger";
 
@@ -106,39 +106,18 @@ class IssueController {
       });
   }
 
-  getAllIssuesList(_req: Request, res: Response, next: NextFunction) {
-    try {
-      issueService
-        .getAllIssuesList()
-        .then((response: any) => {
-          console.log(
-            "🚀 ~ file: issue.controller.ts:120 ~ IssueController ~ .then ~ response:",
-            JSON.stringify(response)
-          );
-          if (!response.error) {
-            console.log(
-              "🚀 ~ file: issue.controller.ts:121 ~ IssueController ~ .then ~ response.error:",
-              JSON.stringify(response.error)
-            );
-            return res.status(200).send({ ...response });
-          } else {
-            return res.status(200).send({
-              totalCount: 0,
-              issues: [],
-              error: response.error,
-            });
-          }
-        })
-        .catch((err: any) => {
-          console.log(
-            "🚀 ~ file: issue.controller.ts:152 ~ IssueController ~ getAllIssuesList ~ err:",
-            err
-          );
-          return next(err);
-        });
-    } catch (error) {
-      return next(error);
+  async getAllIssuesList(req: Request, res: Response) {
+    const secret = req.body.secret;
+
+    if (secret !== "123456") {
+      return res.json({ message: "Request secret is matching" });
     }
+
+    const response: any = await issueService.getAllIssuesList();
+
+    return res.status(200).send({
+      data: response,
+    });
   }
 }
 
