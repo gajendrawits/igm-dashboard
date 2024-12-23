@@ -109,15 +109,36 @@ class IssueController {
   getAllIssuesList(req: Request, res: Response, next: NextFunction) {
     try {
       const secret = req.body?.secret;
+      console.log(
+        "🚀 ~ file: issue.controller.ts:112 ~ IssueController ~ getAllIssuesList ~ secret:",
+        secret
+      );
 
       if (!secret || secret !== "123456") {
+        console.log(
+          "🚀 ~ file: issue.controller.ts:115 ~ IssueController ~ getAllIssuesList ~ secret:",
+          secret
+        );
         return res.status(400).send({ message: "Request secret is invalid" });
       }
+
+      console.log(
+        "🚀 ~ file: issue.controller.ts:146 ~ IssueController ~ getAllIssuesList ~ issueService:",
+        issueService
+      );
 
       issueService
         .getAllIssuesList()
         .then((response: any) => {
+          console.log(
+            "🚀 ~ file: issue.controller.ts:120 ~ IssueController ~ .then ~ response:",
+            JSON.stringify(response)
+          );
           if (!response.error) {
+            console.log(
+              "🚀 ~ file: issue.controller.ts:121 ~ IssueController ~ .then ~ response.error:",
+              JSON.stringify(response.error)
+            );
             return res.status(200).send({ ...response });
           } else {
             return res.status(200).send({
@@ -128,6 +149,10 @@ class IssueController {
           }
         })
         .catch((err: any) => {
+          console.log(
+            "🚀 ~ file: issue.controller.ts:152 ~ IssueController ~ getAllIssuesList ~ err:",
+            err
+          );
           return next(err);
         });
     } catch (error) {
