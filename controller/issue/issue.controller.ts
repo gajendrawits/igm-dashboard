@@ -107,26 +107,32 @@ class IssueController {
   }
 
   getAllIssuesList(req: any, res: Response, next: NextFunction) {
-    const secret = req.body.secret;
-    if (secret !== "123456") {
-      res.json({ message: "Request secret is matching" });
-    }
+    try {
+      const secret = req.body?.secret;
 
-    issueService
-      .getAllIssuesList()
-      .then((response: any) => {
-        if (!response.error) {
-          res.json({ ...response });
-        } else
-          res.status(200).json({
-            totalCount: 0,
-            issues: [],
-            error: response.error,
-          });
-      })
-      .catch((err: any) => {
-        next(err);
-      });
+      if (!secret || secret !== "123456") {
+        return res.status(400).send({ message: "Request secret is invalid" });
+      }
+
+      issueService
+        .getAllIssuesList()
+        .then((response: any) => {
+          if (!response.error) {
+            return res.status(200).send({ ...response });
+          } else {
+            return res.status(200).send({
+              totalCount: 0,
+              issues: [],
+              error: response.error,
+            });
+          }
+        })
+        .catch((err: any) => {
+          return next(err);
+        });
+    } catch (error) {
+      return next(error);
+    }
   }
 }
 
