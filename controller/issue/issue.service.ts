@@ -519,11 +519,10 @@ class IssueService {
       let { limit = 10, pageNumber = 1 } = params;
 
       let skip = (pageNumber - 1) * limit;
-      const issues = await Issue.find()
-        .sort({ created_at: -1 })
-        .limit(limit)
-        .skip(skip);
+      logger.info(`getAllIssuesList skip ${skip} pageNumber${pageNumber}`);
+      const issues = await Issue.find().limit(limit).skip(skip);
 
+      const totalCount = await Issue.countDocuments();
       logger.info(`getAllIssuesList ${JSON.stringify(issues)}`);
       if (!issues.length) {
         return {
@@ -534,7 +533,7 @@ class IssueService {
         };
       } else {
         return {
-          totalCount: issues.length,
+          totalCount: totalCount,
           issues: issues,
         };
       }
