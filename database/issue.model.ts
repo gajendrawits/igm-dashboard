@@ -31,7 +31,7 @@ const IssueSchema = new mongoose.Schema(
     sub_category: { type: String },
     bppId: String,
     bpp_uri: String,
-    domain : String,
+    domain: String,
     complainant_info: { type: complaintInfoSchema },
     order_details: { type: Object },
     description: { type: Object },
@@ -46,6 +46,8 @@ const IssueSchema = new mongoose.Schema(
   },
   { _id: true, timestamps: false }
 );
+
+IssueSchema.index({ transaction_id: 1 });
 
 const Issue = mongoose.model("issue", IssueSchema);
 
