@@ -107,11 +107,18 @@ class IssueController {
   }
 
   async getAllIssuesList(req: Request, res: Response, _next: NextFunction) {
-    const { limit, pageNumber } = req.params;
+    const limit = parseInt(req.query.limit as string, 10) || 10;
+    const pageNumber = parseInt(req.query.pageNumber as string, 10) || 1;
+
+    console.log(
+      "🚀 ~ file: issue.controller.ts:111 ~ IssueController ~ getAllIssuesList ~ limit, pageNumber:",
+      limit,
+      pageNumber
+    );
 
     const response: any = await issueService.getAllIssuesList({
-      limit: parseInt(limit),
-      pageNumber: parseInt(pageNumber),
+      limit: limit,
+      pageNumber: pageNumber,
     });
     console.log(
       "🚀 ~ file: issue.controller.ts:111 ~ IssueController ~ getAllIssuesList ~ response:",

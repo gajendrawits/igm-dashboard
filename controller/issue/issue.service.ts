@@ -324,7 +324,7 @@ class IssueService {
         issueRequests
       );
 
-      if (bppResponse?.context) {
+      if (bppResponse?.message.ack.status === "ACK") {
         await this.createIssueInDatabase(
           issueRequests,
           userDetails,

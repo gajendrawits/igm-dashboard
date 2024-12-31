@@ -76,14 +76,22 @@ class HttpRequest {
       if (err.response) {
         // The client was given an error response (5xx, 4xx)
         logger.info(
-          `Error response =============, ${JSON.stringify(err?.response?.data)}`
+          ` Error response while making http request to protocol =============, ${JSON.stringify(
+            err?.response?.data
+          )}`
         );
       } else if (err.request) {
         // The client never received a response, and the request was never left
-        logger.info(`Error request ===========, ${err.request}`);
+        logger.info(
+          `Error request while making http request to protocol ===========, ${err.request}`
+        );
       } else {
         // Anything else
-        logger.info(`Error message, ${JSON.stringify(err.message)}`);
+        logger.info(
+          `Error message http request to protocol, ${JSON.stringify(
+            err.message
+          )}`
+        );
       }
 
       throw err;
