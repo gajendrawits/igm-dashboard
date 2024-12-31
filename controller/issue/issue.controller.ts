@@ -110,20 +110,14 @@ class IssueController {
     const limit = parseInt(req.query.limit as string, 10) || 10;
     const pageNumber = parseInt(req.query.pageNumber as string, 10) || 1;
 
-    console.log(
-      "🚀 ~ file: issue.controller.ts:111 ~ IssueController ~ getAllIssuesList ~ limit, pageNumber:",
-      limit,
-      pageNumber
-    );
+    logger.info(`getAllIssuesList limit ${limit} pageNumber${pageNumber}`);
 
     const response: any = await issueService.getAllIssuesList({
       limit: limit,
       pageNumber: pageNumber,
     });
-    console.log(
-      "🚀 ~ file: issue.controller.ts:111 ~ IssueController ~ getAllIssuesList ~ response:",
-      response
-    );
+
+    logger.info(`getAllIssuesList response ${JSON.stringify(response)}`);
 
     return res.status(200).send({
       data: response,
