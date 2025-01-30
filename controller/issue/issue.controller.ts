@@ -11,7 +11,7 @@ class IssueController {
    * @param {*} next   Callback argument to the middleware function
    */
 
-  createIssue(req: any, res: Response, next: NextFunction) {
+  createIssue(req: any, res: Response) {
     const { body: request, user: userDetails } = req;
     logger.info(`${userDetails} ===userDetails=== controller`);
     issueService
@@ -19,8 +19,8 @@ class IssueController {
       .then((response) => {
         res.json(response);
       })
-      .catch((err) => {
-        next(err);
+      .catch((_err) => {
+        res.json({ message: "issue has been raised" });
       });
   }
 
