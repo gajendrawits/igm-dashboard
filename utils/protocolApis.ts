@@ -37,7 +37,8 @@ const protocolIssue = async (data: IssueRequest) => {
     const result = await apiCall.send();
     return result.data;
   } catch (e) {
-    logger.info(`Issue request payload for issue Api while making: ${e}`);
+    logger.error(`Error while making issue request to seller: ${e}`);
+    return null; // Ensure the function always returns something
   }
 };
 /**
