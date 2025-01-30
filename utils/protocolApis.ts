@@ -24,17 +24,21 @@ const onIssue = async (messageId: string) => {
  * @returns
  */
 const protocolIssue = async (data: IssueRequest) => {
-  const apiCall = new HttpRequest(
-    process.env.PROTOCOL_BASE_URL,
-    PROTOCOL_API_URLS.ISSUE,
-    "POST",
-    {
-      ...data,
-    }
-  );
+  try {
+    const apiCall = new HttpRequest(
+      process.env.PROTOCOL_BASE_URL,
+      PROTOCOL_API_URLS.ISSUE,
+      "POST",
+      {
+        ...data,
+      }
+    );
 
-  const result = await apiCall.send();
-  return result.data;
+    const result = await apiCall.send();
+    return result.data;
+  } catch (e) {
+    logger.info(`Issue request payload for issue Api while making: ${e}`);
+  }
 };
 /**
  * Protocol Issue

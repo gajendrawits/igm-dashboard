@@ -89,11 +89,14 @@ class BppIssueService {
       logger.info(
         `Error while raising issue for Issue Api: ${JSON.stringify({
           context: context,
-          message: err.code,
+          message: err.error,
         })}`
       );
 
-      throw err;
+      return {
+        context: context,
+        message: err.error,
+      };
     }
   }
   async closeOrEscalateIssue(context: Context, issue: IssueProps) {
