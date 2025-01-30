@@ -9,11 +9,11 @@ const issueController = new IssueController();
 
 router.post(
   "/v1/issue",
-  authentication(),
+  // authentication(),
   checkIfIssueAlreadyExist,
   issueController.createIssue
 );
-router.get("/v1/issue", authentication(), issueController.getIssue);
+router.get("/v1/issue", issueController.getIssue);
 router.get("/v1/on_issue", authentication(), issueController.onIssue);
 router.get("/v1/getIssues", authentication(), issueController.getIssuesList);
 router.get("/v1/allIssues", issueController.getAllIssuesList);

@@ -80,11 +80,6 @@ class HttpRequest {
             err?.response?.data
           )}`
         );
-      } else if (err.request) {
-        // The client never received a response, and the request was never left
-        logger.info(
-          `Error request while making http request to protocol ===========, ${err.request}`
-        );
       } else {
         // Anything else
         logger.info(

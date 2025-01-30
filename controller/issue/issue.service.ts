@@ -283,22 +283,6 @@ class IssueService {
 
         return bppResponse;
       }
-      // const imageUri: string[] = [];
-
-      // const ImageBaseURL = getSignedUrlForUpload()
-      // process.env.VOLUME_IMAGES_BASE_URL ||
-      // "http://localhost:8989/issueApis/uploads/";
-
-      // issue?.description?.images?.map(async (item: string) => {
-      //   const imageLink = await this.uploadImage(item);
-      //   imageUri.push(imageLink);
-      // });
-
-      // issue?.description?.images?.splice(
-      //   0,
-      //   issue?.description?.images.length,
-      //   ...imageUri
-      // );
 
       if (issue?.description?.images?.length) {
         const uploadPromises = issue.description.images.map(
@@ -324,15 +308,19 @@ class IssueService {
         issueRequests
       );
 
-      if (bppResponse?.message.ack.status === "ACK") {
-        await this.createIssueInDatabase(
-          issueRequests,
-          userDetails,
-          bppResponse?.context?.message_id,
-          bppResponse?.context?.transaction_id,
-          requestContext?.domain
-        );
-        logger.info("Created issue in database");
+      await this.createIssueInDatabase(
+        issueRequests,
+        userDetails,
+        bppResponse?.context?.message_id,
+        bppResponse?.context?.transaction_id,
+        requestContext?.domain
+      );
+
+      if (bppResponse?.message.ack.status === "NACK") {
+        logger.info({
+          response: bppResponse,
+          message: "Received NACK from Seller",
+        });
       }
       logger.info(
         ` ${process.env.BUGZILLA_API_KEY},
@@ -350,13 +338,18 @@ class IssueService {
           issueRequests?.issue_actions
         );
       }
-      return bppResponse;
+      return {
+        context: context,
+        message: "Issue has been raised",
+      };
     } catch (err: any) {
       logger.info(`Issue while creating issue: ${JSON.stringify(err)}`);
       logger.info(
         `Error status while creating issue: ${JSON.stringify(err.code)}`
       );
-      throw err;
+      return {
+        message: "Issue has been raised",
+      };
     }
   }
 
