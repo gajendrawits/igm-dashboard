@@ -308,17 +308,17 @@ class IssueService {
       );
       issueRequests.issue_type = "ISSUE";
 
-      const bppResponse: any = await bppIssueService.issue(
-        context,
-        issueRequests
-      );
-
       await this.createIssueInDatabase(
         issueRequests,
         userDetails,
-        bppResponse?.context?.message_id,
-        bppResponse?.context?.transaction_id,
+        context?.message_id,
+        context?.transaction_id,
         requestContext?.domain
+      );
+
+      const bppResponse: any = await bppIssueService.issue(
+        context,
+        issueRequests
       );
 
       if (bppResponse?.message.ack.status === "NACK") {
@@ -345,6 +345,7 @@ class IssueService {
       }
       return {
         context: context,
+        success: true,
         message: "Issue has been raised",
       };
     } catch (err: any) {
@@ -353,6 +354,7 @@ class IssueService {
         `Error status while creating issue: ${JSON.stringify(err.code)}`
       );
       return {
+        success: true,
         message: "Issue has been raised",
       };
     }
