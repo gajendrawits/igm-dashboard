@@ -20,7 +20,7 @@ class IssueController {
         res.json(response);
       })
       .catch((_err) => {
-        next(_err);
+        res.status(200).json(_err);
       });
   }
 
