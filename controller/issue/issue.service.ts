@@ -316,7 +316,7 @@ class IssueService {
       await this.createIssueInDatabase(
         issueRequests,
         userDetails,
-        context?.context?.message_id,
+        bppResponse?.context?.message_id,
         bppResponse?.context?.transaction_id,
         requestContext?.domain
       );
