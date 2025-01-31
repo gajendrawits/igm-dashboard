@@ -244,6 +244,11 @@ class IssueService {
         state: requestContext?.state,
       });
 
+      console.log(
+        "🚀 ~ file: issue.service.ts:246 ~ IssueService ~ createIssue ~ context:",
+        context
+      );
+
       if (message?.issue?.rating || message?.issue?.issue_type) {
         const existingIssue: IssueProps = await getIssueByTransactionId(
           requestContext?.transaction_id
@@ -311,7 +316,7 @@ class IssueService {
       await this.createIssueInDatabase(
         issueRequests,
         userDetails,
-        bppResponse?.context?.message_id,
+        context?.context?.message_id,
         bppResponse?.context?.transaction_id,
         requestContext?.domain
       );
