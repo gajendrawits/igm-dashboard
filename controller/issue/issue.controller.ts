@@ -19,8 +19,8 @@ class IssueController {
       .then((response) => {
         res.json(response);
       })
-      .catch((err) => {
-        next(err);
+      .catch((_err) => {
+        next(_err);
       });
   }
 

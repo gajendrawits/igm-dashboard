@@ -9,7 +9,7 @@ const issueController = new IssueController();
 
 router.post(
   "/v1/issue",
-  // authentication(),
+  authentication(),
   checkIfIssueAlreadyExist,
   issueController.createIssue
 );
