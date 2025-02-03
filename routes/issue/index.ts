@@ -3,7 +3,7 @@ import express from "express";
 import IssueController from "../../controller/issue/issue.controller";
 import {
   checkIfIssueAlreadyExist,
-  validateApiKey,
+  // validateApiKey,
 } from "../../middleware/authentication";
 
 const router = express.Router();
