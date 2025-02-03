@@ -19,9 +19,9 @@ router.post(
 router.get("/v1/issue", issueController.getIssue);
 router.get("/v1/on_issue", issueController.onIssue);
 router.get("/v1/getIssues", issueController.getIssuesList);
-router.get("/v1/download", issueController.getAllIssuesList);
+router.get("/v1/allIssues", issueController.getAllIssuesList);
 router.get(
-  "/v1/getallIssues",
+  "/v1/download",
   // validateApiKey,
   issueController.getAllIssuesExcel
 );
