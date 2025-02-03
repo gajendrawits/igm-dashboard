@@ -266,7 +266,10 @@ class IssueController {
         "Content-Type",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
       );
-      res.setHeader("Content-Disposition", "attachment; filename=issues.xlsx");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=issues|" + from + "|" + to + ".xlsx"
+      );
 
       // Write the Excel file to the response
       await workbook.xlsx.write(res);
