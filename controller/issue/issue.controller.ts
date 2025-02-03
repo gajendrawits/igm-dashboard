@@ -173,7 +173,7 @@ class IssueController {
       if (issues.length === 0) {
         return res
           .status(404)
-          .send("No issues found in the specified date range.");
+          .send("No issues found in the specified date range !");
       }
 
       // Create a new workbook and worksheet
