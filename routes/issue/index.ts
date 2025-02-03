@@ -1,5 +1,5 @@
 import express from "express";
-// import { authentication } from "../../middleware";
+import { authentication } from "../../middleware";
 import IssueController from "../../controller/issue/issue.controller";
 import {
   checkIfIssueAlreadyExist,
