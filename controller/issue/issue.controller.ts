@@ -132,118 +132,148 @@ class IssueController {
   //  * @param {*} next   Callback argument to the middleware function
   //  */
 
-  async getAllIssuesExcel(_req: Request, res: Response, _next: NextFunction) {
+  async getAllIssuesExcel(req: Request, res: Response, _next: NextFunction) {
     try {
-      // Fetch the issues data from MongoDB
-      const issues = await Issue.find({});
+      const { from, to } = req.query;
 
-      issues.forEach(async (issue) => {
-        // Assuming 'created_at' is the "From Date"
-        const fromDate = new Date(issue?.created_at!);
+      // Validate that both 'from' and 'to' are present
+      if (!from || !to) {
+        return res
+          .status(400)
+          .send("Both 'from' and 'to' query parameters are required.");
+      }
+
+      const startDate = new Date(from?.toString() || "");
+      const endDate = new Date(to?.toString() || "");
+
+      // Fetch the issues data from MongoDB within the date range
+      const issues = await Issue.aggregate([
+        {
+          $match: {
+            $expr: {
+              $and: [
+                {
+                  $gte: [
+                    { $dateFromString: { dateString: "$created_at" } },
+                    startDate,
+                  ],
+                },
+                {
+                  $lte: [
+                    { $dateFromString: { dateString: "$created_at" } },
+                    endDate,
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      ]);
+
+      if (issues.length === 0) {
+        return res
+          .status(404)
+          .send("No issues found in the specified date range.");
+      }
+
+      // Create a new workbook and worksheet
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Issues");
+
+      // Define columns for the worksheet
+      worksheet.columns = [
+        { header: "S no", key: "s_no" },
+        { header: "Issues Till", key: "issues_till" },
+        { header: "Item", key: "item" },
+        { header: "Transaction ID", key: "transaction_id" },
+        { header: "Network ID", key: "network_id" },
+        { header: "Category", key: "category" },
+        { header: "Sub Category", key: "sub_category" },
+        { header: "BPP ID", key: "bppId" },
+        { header: "BPP URI", key: "bpp_uri" },
+        { header: "Domain", key: "domain" },
+        { header: "Complainant Name", key: "complainant_name" },
+        { header: "Complainant Phone", key: "complainant_phone" },
+        { header: "Order ID", key: "orderId" },
+        { header: "Order Details", key: "order_details" },
+        { header: "Description", key: "description" },
+        { header: "Issue Status", key: "issue_status" },
+        { header: "Created At", key: "created_at" },
+        { header: "Updated At", key: "updated_at" },
+        { header: "Short Description", key: "short_desc" },
+        { header: "Long Description", key: "long_desc" },
+        { header: "Owner", key: "owner" },
+        { header: "Group", key: "group" },
+        {
+          header: "Additional Details Content Type",
+          key: "additional_desc.content_type",
+        },
+        { header: "Images", key: "images" },
+        { header: "Ticket #", key: "ticket_no" },
+        { header: "Assignee", key: "assignee" },
+        { header: "Network Issue ID", key: "network_issue_id" },
+        { header: "Issue Sub Category", key: "issue_sub_category" },
+        { header: "Issue Sub Category Desc", key: "issue_sub_category_desc" },
+        { header: "Network Order ID", key: "network_order_id" },
+        { header: "Network Item ID", key: "network_item_id" },
+      ];
+
+      // Prepare rows
+      const rows = issues.map((issue, index) => {
+        const fromDate = new Date(issue?.created_at);
         const tillDate = new Date(); // Today's date (Till Date)
         const formattedFromDate = fromDate.toLocaleDateString("en-GB");
         const formattedTillDate = tillDate.toLocaleDateString("en-GB");
         const dateRange = `${formattedFromDate} to ${formattedTillDate}`;
 
-        // Create a new workbook and worksheet
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet("Issues");
-
-        // Define columns for the worksheet
-        worksheet.columns = [
-          { header: "S no", key: "s_no" },
-          { header: "Issues Till", key: "issues_till" },
-          { header: "Item", key: "item" },
-          { header: "Transaction ID", key: "transaction_id" },
-          { header: "Network ID", key: "network_id" },
-          { header: "Category", key: "category" },
-          { header: "Sub Category", key: "sub_category" },
-          { header: "BPP ID", key: "bppId" },
-          { header: "BPP URI", key: "bpp_uri" },
-          { header: "Domain", key: "domain" },
-          { header: "Complainant Name", key: "complainant_name" },
-          { header: "Complainant Phone", key: "complainant_phone" },
-          { header: "Order ID", key: "orderId" },
-          { header: "Order Details", key: "order_details" },
-          { header: "Description", key: "description" },
-          { header: "Issue Status", key: "issue_status" },
-          { header: "Created At", key: "created_at" },
-          { header: "Updated At", key: "updated_at" },
-          { header: "Short Description", key: "short_desc" },
-          { header: "Long Description", key: "long_desc" },
-          { header: "Owner", key: "owner" },
-          { header: "Group", key: "group" },
-          {
-            header: "Additional Details Content Type",
-            key: "additional_desc.content_type",
-          },
-          { header: "Images", key: "images" },
-
-          // Adding the new columns
-          { header: "Ticket #", key: "ticket_no" },
-          { header: "Assignee", key: "assignee" },
-
-          { header: "Network Issue ID", key: "network_issue_id" },
-          { header: "Issue Sub Category", key: "issue_sub_category" },
-          { header: "Issue Sub Category Desc", key: "issue_sub_category_desc" },
-          { header: "Network Order ID", key: "network_order_id" },
-          { header: "Network Item ID", key: "network_item_id" },
-        ];
-
-        // Map the fetched data into the format needed for the Excel file
-        const rows = issues.map((issue, index) => {
-          return {
-            s_no: index + 1, // Serial number
-            userId: issue.userId,
-            transaction_id: issue.transaction_id,
-            message_id: issue.message_id,
-            category: issue.category,
-            sub_category: issue.sub_category,
-            bppId: issue.bppId,
-            bpp_uri: issue.bpp_uri,
-            domain: issue.domain,
-            complainant_name: issue.complainant_info?.person?.name || "",
-            complainant_phone: issue.complainant_info?.contact?.phone || "",
-            // complainant_email: issue.complainant_info?.contact?.email || '',
-            orderId: issue.orderId,
-            order_details: JSON.stringify(issue.order_details), // Serialize complex objects
-            description: JSON.stringify(issue.description), // Serialize complex objects
-
-            description_short: issue.description?.short_desc || "",
-            description_long: issue.description?.long_desc || "",
-            description_additional:
-              issue.description?.additional_desc?.url || "",
-            issue_status: issue.issue_status,
-            created_at: issue.created_at,
-            updated_at: issue.updated_at,
-            item: "Wheat",
-          };
-        });
-
-        // Add rows to the worksheet
-        worksheet.addRows(rows);
-        worksheet.addRow({
-          issues_till: dateRange,
-          // To Date
-        });
-
-        // Set response headers for downloading the Excel file
-        res.setHeader(
-          "Content-Type",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        );
-        res.setHeader(
-          "Content-Disposition",
-          "attachment; filename=issues.xlsx"
-        );
-
-        // Write the Excel file to the response
-        await workbook.xlsx.write(res);
-        res.end(); // End the response
+        return {
+          s_no: index + 1,
+          transaction_id: issue.transaction_id,
+          network_id: issue.network_id,
+          category: issue.category,
+          sub_category: issue.sub_category,
+          bppId: issue.bppId,
+          bpp_uri: issue.bpp_uri,
+          domain: issue.domain,
+          complainant_name: issue.complainant_info?.person?.name || "",
+          complainant_phone: issue.complainant_info?.contact?.phone || "",
+          orderId: issue.orderId,
+          order_details: JSON.stringify(issue.order_details), // Serialize complex objects
+          description: JSON.stringify(issue.description), // Serialize complex objects
+          short_desc: issue.description?.short_desc || "",
+          long_desc: issue.description?.long_desc || "",
+          additional_desc: issue.description?.additional_desc?.url || "",
+          issue_status: issue.issue_status,
+          created_at: issue.created_at,
+          updated_at: issue.updated_at,
+          item: "Wheat",
+          ticket_no: issue.ticket_no || "", // Example, if there's a ticket number
+          assignee: issue.assignee || "",
+          network_issue_id: issue.network_issue_id || "",
+          issue_sub_category: issue.issue_sub_category || "",
+          issue_sub_category_desc: issue.issue_sub_category_desc || "",
+          network_order_id: issue.network_order_id || "",
+          network_item_id: issue.network_item_id || "",
+          issues_till: dateRange, // Add the date range as the last row
+        };
       });
+
+      // Add rows to the worksheet in bulk
+      worksheet.addRows(rows);
+
+      // Set response headers for downloading the Excel file
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader("Content-Disposition", "attachment; filename=issues.xlsx");
+
+      // Write the Excel file to the response
+      await workbook.xlsx.write(res);
+      return res.end(); // End the response
     } catch (error) {
       logger.error("Error generating Excel:", error);
-      res.status(500).send("Error generating Excel file");
+      return res.status(500).send("Error generating Excel file");
     }
   }
 }
