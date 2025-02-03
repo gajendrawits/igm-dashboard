@@ -1,10 +1,10 @@
 import express from "express";
 // import { authentication } from "../../middleware";
 import IssueController from "../../controller/issue/issue.controller";
-// import {
-//   // checkIfIssueAlreadyExist,
-//   validateApiKey,
-// } from "../../middleware/authentication";
+import {
+  checkIfIssueAlreadyExist,
+  validateApiKey,
+} from "../../middleware/authentication";
 
 const router = express.Router();
 
