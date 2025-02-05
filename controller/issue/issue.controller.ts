@@ -227,7 +227,7 @@ class IssueController {
           complainant_phone: issue.complainant_info?.contact?.phone || "",
           orderId: issue?.order_details?.id,
           // order_details: JSON.stringify(issue.order_details), // Serialize complex objects
-          item: issue?.order_details?.items[0]?.product?.name, // Serialize complex ob
+          item: issue?.order_details?.items[0]?.product?.descriptor?.name, // Serialize complex ob
           item_id: issue?.order_details?.items[0]?.product?.id, // Serialize complex objects
           // order_state: JSON.stringify(issue?.order_details?.state), // Serialize complex objects
           short_desc: issue.description?.short_desc || "",
