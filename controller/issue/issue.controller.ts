@@ -215,12 +215,6 @@ class IssueController {
 
       // Prepare rows
       const rows = issues.map((issue, index) => {
-        const fromDate = new Date(issue?.created_at);
-        const tillDate = new Date(); // Today's date (Till Date)
-        const formattedFromDate = fromDate.toLocaleDateString("en-GB");
-        const formattedTillDate = tillDate.toLocaleDateString("en-GB");
-        const dateRange = `${formattedFromDate} to ${formattedTillDate}`;
-
         return {
           s_no: index + 1,
           transaction_id: issue.transaction_id,
@@ -250,7 +244,6 @@ class IssueController {
           group: issue.group || "",
           additional_desc_content_type:
             issue.additional_desc_content_type || "",
-          issues_till: dateRange, // Add the date range as the last row
         };
       });
 
