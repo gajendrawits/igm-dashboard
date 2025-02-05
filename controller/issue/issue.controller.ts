@@ -183,7 +183,6 @@ class IssueController {
       // Define columns for the worksheet
       worksheet.columns = [
         { header: "S no", key: "s_no" },
-        { header: "Issues Till", key: "issues_till" },
         { header: "Item", key: "item" },
         { header: "Transaction ID", key: "transaction_id" },
         { header: "Network ID", key: "network_id" },
