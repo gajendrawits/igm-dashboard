@@ -183,8 +183,8 @@ class IssueController {
       // Define columns for the worksheet
       worksheet.columns = [
         { header: "S no", key: "s_no" },
+        { header: "Ticket #", key: "ticket_no" },
         { header: "Item", key: "item" },
-        { header: "Transaction ID", key: "transaction_id" },
         { header: "Network ID", key: "network_id" },
         { header: "Category", key: "category" },
         { header: "Sub Category", key: "sub_category" },
@@ -208,7 +208,6 @@ class IssueController {
           header: "Additional Details Content Type",
           key: "additional_desc_content_type",
         },
-        { header: "Ticket #", key: "ticket_no" },
         { header: "Assignee", key: "assignee" },
       ];
 
@@ -217,7 +216,7 @@ class IssueController {
         return {
           s_no: index + 1,
           transaction_id: issue.transaction_id,
-          network_id: issue.network_id,
+          network_id: issue.transaction_id,
           category: issue.category,
           sub_category: issue.sub_category,
           bppId: issue.bppId,
@@ -237,7 +236,7 @@ class IssueController {
           issue_status: issue.issue_status,
           created_at: issue.created_at,
           updated_at: issue.updated_at,
-          ticket_no: issue.ticket_no || "", // Example, if there's a ticket number
+          ticket_no: issue._id || "", // Example, if there's a ticket number
           assignee: issue.assignee || "",
           owner: issue.owner || "",
           group: issue.group || "",
