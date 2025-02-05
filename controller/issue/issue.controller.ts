@@ -195,27 +195,22 @@ class IssueController {
         { header: "Complainant Name", key: "complainant_name" },
         { header: "Complainant Phone", key: "complainant_phone" },
         { header: "Order ID", key: "orderId" },
-        { header: "Order Details", key: "order_details" },
-        { header: "Description", key: "description" },
+        { header: "Item Id", key: "item_id" },
         { header: "Issue Status", key: "issue_status" },
         { header: "Created At", key: "created_at" },
         { header: "Updated At", key: "updated_at" },
         { header: "Short Description", key: "short_desc" },
         { header: "Long Description", key: "long_desc" },
+        { header: "url", key: "url" },
+        { header: "Images", key: "images" },
         { header: "Owner", key: "owner" },
         { header: "Group", key: "group" },
         {
           header: "Additional Details Content Type",
-          key: "additional_desc.content_type",
+          key: "additional_desc_content_type",
         },
-        { header: "Images", key: "images" },
         { header: "Ticket #", key: "ticket_no" },
         { header: "Assignee", key: "assignee" },
-        { header: "Network Issue ID", key: "network_issue_id" },
-        { header: "Issue Sub Category", key: "issue_sub_category" },
-        { header: "Issue Sub Category Desc", key: "issue_sub_category_desc" },
-        { header: "Network Order ID", key: "network_order_id" },
-        { header: "Network Item ID", key: "network_item_id" },
       ];
 
       // Prepare rows
@@ -237,23 +232,24 @@ class IssueController {
           domain: issue.domain,
           complainant_name: issue.complainant_info?.person?.name || "",
           complainant_phone: issue.complainant_info?.contact?.phone || "",
-          orderId: issue.orderId,
-          order_details: JSON.stringify(issue.order_details), // Serialize complex objects
-          description: JSON.stringify(issue.description), // Serialize complex objects
+          orderId: issue?.order_details?.id,
+          // order_details: JSON.stringify(issue.order_details), // Serialize complex objects
+          item: issue?.order_details?.items[0]?.product?.name, // Serialize complex ob
+          item_id: issue?.order_details?.items[0]?.product?.id, // Serialize complex objects
+          // order_state: JSON.stringify(issue?.order_details?.state), // Serialize complex objects
           short_desc: issue.description?.short_desc || "",
           long_desc: issue.description?.long_desc || "",
-          additional_desc: issue.description?.additional_desc?.url || "",
+          url: issue.description?.additional_desc?.url || "",
+          Image: issue?.description?.image || "",
           issue_status: issue.issue_status,
           created_at: issue.created_at,
           updated_at: issue.updated_at,
-          item: "Wheat",
           ticket_no: issue.ticket_no || "", // Example, if there's a ticket number
           assignee: issue.assignee || "",
-          network_issue_id: issue.network_issue_id || "",
-          issue_sub_category: issue.issue_sub_category || "",
-          issue_sub_category_desc: issue.issue_sub_category_desc || "",
-          network_order_id: issue.network_order_id || "",
-          network_item_id: issue.network_item_id || "",
+          owner: issue.owner || "",
+          group: issue.group || "",
+          additional_desc_content_type:
+            issue.additional_desc_content_type || "",
           issues_till: dateRange, // Add the date range as the last row
         };
       });
