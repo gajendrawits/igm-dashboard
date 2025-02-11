@@ -87,20 +87,19 @@ export const checkIfIssueAlreadyExist = async (
     });
   }
 };
-const API_KEY = process.env.API_KEY;
+const API_KEY = process.env.API_KEY || "4f9d5fe0-a964-4f11-af99-6c40de98af77";
 
 export const validateApiKey = (
   req: Request,
   res: Response,
   next: NextFunction
 ): void | Response => {
-  const userApiKey = req.header("x-api-key"); // Get API key from request header
-
-  if (!userApiKey) {
+  const { apiKey } = req.query;
+  if (!apiKey) {
     return res.status(401).json({ error: "API key is required" });
   }
 
-  if (userApiKey !== API_KEY) {
+  if (apiKey !== API_KEY) {
     return res.status(403).json({ error: "Invalid API key" });
   }
 
