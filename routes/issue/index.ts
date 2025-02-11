@@ -3,7 +3,7 @@ import { authentication } from "../../middleware";
 import IssueController from "../../controller/issue/issue.controller";
 import {
   checkIfIssueAlreadyExist,
-  // validateApiKey,
+  validateApiKey,
 } from "../../middleware/authentication";
 
 const router = express.Router();
@@ -20,10 +20,6 @@ router.get("/v1/issue", issueController.getIssue);
 router.get("/v1/on_issue", issueController.onIssue);
 router.get("/v1/getIssues", issueController.getIssuesList);
 router.get("/v1/allIssues", issueController.getAllIssuesList);
-router.get(
-  "/v1/download",
-  // validateApiKey,
-  issueController.getAllIssuesExcel
-);
+router.get("/v1/download", validateApiKey, issueController.getAllIssuesExcel);
 
 export default router;
