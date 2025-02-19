@@ -14,7 +14,7 @@ import {
   addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
   getIssueByOrderId,
-  addOrUpdateIssueWithsubcategory
+  addOrUpdateIssueWithIssueId
 } from "../../utils/dbservice";
 
 const bppIssueService = new BppIssueService();
@@ -453,7 +453,7 @@ class IssueService {
         //   protocolIssueResponse?.[0]?.context?.transaction_id,
         //   issue
         // );
-        await addOrUpdateIssueWithsubcategory(
+        await addOrUpdateIssueWithIssueId(
           protocolIssueResponse?.[0]?.context?.transaction_id,
           protocolIssueResponse?.[0]?.message?.issue?.sub_category,
           protocolIssueResponse?.[0]?.context?.issueId,

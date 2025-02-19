@@ -20,7 +20,7 @@ const addOrUpdateIssueWithtransactionId = async (
     { upsert: true }
   );
 };
-const addOrUpdateIssueWithsubcategory = async (
+const addOrUpdateIssueWithIssueId = async (
   transactionId: string | any,
   subcategory: string |any,
   issueid : string | any,
@@ -75,5 +75,5 @@ export {
   addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
   getIssueByOrderId,
-  addOrUpdateIssueWithsubcategory
+  addOrUpdateIssueWithIssueId
 };

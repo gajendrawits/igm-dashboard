@@ -6,7 +6,7 @@ import BppIssueStatusService from "./bpp.issue_status.service";
 import {
   // addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
-  addOrUpdateIssueWithsubcategory
+  addOrUpdateIssueWithIssueId
 } from "../../utils/dbservice";
 import { IssueProps, RespondentActions } from "../../interfaces/issue";
 import BugzillaService from "../../controller/bugzilla/bugzilla.service";
@@ -94,7 +94,7 @@ class IssueStatusService {
         //   protocolSupportResponse?.[0]?.context?.transaction_id,
         //   issue
         // );
-        await addOrUpdateIssueWithsubcategory(
+        await addOrUpdateIssueWithIssueId(
           protocolSupportResponse?.[0]?.context?.transaction_id,
           protocolSupportResponse?.[0]?.message?.issue?.sub_category,
           protocolSupportResponse?.[0]?.context?.issueId,
