@@ -4,8 +4,9 @@ import { PROTOCOL_CONTEXT } from "../../shared/constants";
 import ContextFactory from "../../utils/contextFactory";
 import BppIssueStatusService from "./bpp.issue_status.service";
 import {
-  addOrUpdateIssueWithtransactionId,
+  // addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
+  addOrUpdateIssueWithsubcategory
 } from "../../utils/dbservice";
 import { IssueProps, RespondentActions } from "../../interfaces/issue";
 import BugzillaService from "../../controller/bugzilla/bugzilla.service";
@@ -89,10 +90,17 @@ class IssueStatusService {
           protocolSupportResponse?.[0]?.message?.issue?.resolution;
 
         issue.issue_actions.complainant_actions = complainant_action;
-        await addOrUpdateIssueWithtransactionId(
+        // await addOrUpdateIssueWithtransactionId(
+        //   protocolSupportResponse?.[0]?.context?.transaction_id,
+        //   issue
+        // );
+        await addOrUpdateIssueWithsubcategory(
           protocolSupportResponse?.[0]?.context?.transaction_id,
+          protocolSupportResponse?.[0]?.message?.issue?.sub_category,
+          protocolSupportResponse?.[0]?.context?.issueId,
+
           issue
-        );
+        )
 
         if (process.env.BUGZILLA_API_KEY || process.env.SELECTED_ISSUE_CRM) {
           bugzillaService.updateIssueInBugzilla(

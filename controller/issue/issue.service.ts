@@ -14,6 +14,7 @@ import {
   addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
   getIssueByOrderId,
+  addOrUpdateIssueWithsubcategory
 } from "../../utils/dbservice";
 
 const bppIssueService = new BppIssueService();
@@ -448,10 +449,17 @@ class IssueService {
 
         issue.issue_actions.respondent_actions = respondent_actions;
 
-        await addOrUpdateIssueWithtransactionId(
+        // await addOrUpdateIssueWithtransactionId(
+        //   protocolIssueResponse?.[0]?.context?.transaction_id,
+        //   issue
+        // );
+        await addOrUpdateIssueWithsubcategory(
           protocolIssueResponse?.[0]?.context?.transaction_id,
+          protocolIssueResponse?.[0]?.message?.issue?.sub_category,
+          protocolIssueResponse?.[0]?.context?.issueId,
+
           issue
-        );
+        )
 
         if (
           process.env.BUGZILLA_API_KEY ||
