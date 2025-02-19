@@ -6,11 +6,31 @@ import IssueModel from "../database/issue.model";
  */
 const addOrUpdateIssueWithtransactionId = async (
   transactionId: string | any,
+  issueid : string | any,
   issueSchema: Record<any, any> = {}
 ) => {
   return await IssueModel.findOneAndUpdate(
     {
       transaction_id: transactionId,
+      issueId: issueid
+    },
+    {
+      ...issueSchema,
+    },
+    { upsert: true }
+  );
+};
+const addOrUpdateIssueWithIssueId = async (
+  transactionId: string | any,
+  subcategory: string |any,
+  issueid : string | any,
+  issueSchema: Record<any, any> = {}
+) => {
+  return await IssueModel.findOneAndUpdate(
+    {
+      transaction_id: transactionId,
+      sub_category: subcategory,
+      issueId: issueid
     },
     {
       ...issueSchema,
@@ -55,4 +75,5 @@ export {
   addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
   getIssueByOrderId,
+  addOrUpdateIssueWithIssueId
 };
