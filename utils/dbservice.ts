@@ -6,13 +6,13 @@ import IssueModel from "../database/issue.model";
  */
 const addOrUpdateIssueWithtransactionId = async (
   transactionId: string | any,
-  issueid : string | any,
+  // issueid: string | any,
   issueSchema: Record<any, any> = {}
 ) => {
   return await IssueModel.findOneAndUpdate(
     {
       transaction_id: transactionId,
-      issueId: issueid
+      issueId: issueSchema.issueId,
     },
     {
       ...issueSchema,
@@ -22,15 +22,15 @@ const addOrUpdateIssueWithtransactionId = async (
 };
 const addOrUpdateIssueWithIssueId = async (
   transactionId: string | any,
-  subcategory: string |any,
-  issueid : string | any,
+  subcategory: string | any,
+  issueid: string | any,
   issueSchema: Record<any, any> = {}
 ) => {
   return await IssueModel.findOneAndUpdate(
     {
       transaction_id: transactionId,
       sub_category: subcategory,
-      issueId: issueid
+      issueId: issueid,
     },
     {
       ...issueSchema,
@@ -66,7 +66,7 @@ const getIssueByOrderId = async (orderId: string) => {
     };
   } else
     return {
-      issues:issue,
+      issues: issue,
       issueCount: issue.length,
     };
 };
@@ -75,5 +75,5 @@ export {
   addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
   getIssueByOrderId,
-  addOrUpdateIssueWithIssueId
+  addOrUpdateIssueWithIssueId,
 };
