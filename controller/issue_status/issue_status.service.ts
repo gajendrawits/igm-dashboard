@@ -18,6 +18,7 @@ class IssueStatusService {
     const issue: any = await Issue.find({
       issueId: issueId,
     });
+    console.log(issueId, "this issue is from db")
 
     if (!(issue || issue.length))
       return {
@@ -35,6 +36,8 @@ class IssueStatusService {
   async issue_status(order: any) {
     try {
       const { context: requestContext, message } = order;
+      console.log(message?.issue_id)
+      console.log(message, "this is from msg")
 
       const issueDetails = await this.getIssueByIssueId(message?.issue_id);
 
