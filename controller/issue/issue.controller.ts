@@ -15,7 +15,7 @@ class IssueController {
 
   createIssue(req: any, res: Response) {
     const { body: request, user: userDetails } = req;
-    logger.info(`${userDetails} ===userDetails=== controller`);
+    logger.info(`${JSON.stringify(request)} ===REQUEST FROM CLIENT`);
     issueService
       .createIssue(request, userDetails)
       .then((response) => {
