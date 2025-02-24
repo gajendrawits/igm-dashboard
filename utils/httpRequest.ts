@@ -61,6 +61,7 @@ class HttpRequest {
         });
       } else {
         logger.info(`----this.url, ${this.url}`);
+
         // Make server request using axios
         result = await axios({
           baseURL: this.baseUrl,
@@ -71,6 +72,15 @@ class HttpRequest {
           data: JSON.stringify(this.data),
         });
       }
+      console.log({
+        baseURL: this.baseUrl,
+        url: this.url,
+        method: this.method,
+        headers: headers,
+        timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
+        data: JSON.stringify(this.data),
+      });
+
       return result;
     } catch (err: any) {
       if (err.response) {
