@@ -48,6 +48,8 @@ const protocolIssue = async (data: IssueRequest) => {
  */
 const protocolIssueStatus = async (data: any) => {
   logger.info("Issue status request payload", JSON.stringify(data));
+  console.log(JSON.stringify(data));
+
   const apiCall = new HttpRequest(
     process.env.PROTOCOL_BASE_URL,
     PROTOCOL_API_URLS.ISSUE_STATUS,
