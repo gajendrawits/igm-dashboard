@@ -1,6 +1,7 @@
 import { Response, NextFunction, Request } from "express";
 import BadRequestParameterError from "../../lib/error/bad-request-parameter-error";
 import IssueStatusService from "./issue_status.service";
+import {logger} from '../../shared/logger'
 
 const issueStatusService = new IssueStatusService();
 
@@ -12,7 +13,9 @@ class IssueStatusController {
    * @param {*} next   Callback argument to the middleware function
    */
   issueStatus(req: Request, res: Response, next: NextFunction) {
+    logger.info(`In issueStatus (controller): issueStatus`)
     const { body: issue } = req;
+
     console.log(req.body,"body")
     issueStatusService
       .issue_status(issue)
@@ -32,6 +35,7 @@ class IssueStatusController {
 
    */
   onIssue_status(req: Request, res: Response, next: NextFunction) {
+    logger.info(`issue_status.controllers working `)
     const { query } = req;
     const { messageId }: any = query;
 
