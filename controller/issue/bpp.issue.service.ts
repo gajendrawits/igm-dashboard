@@ -72,7 +72,7 @@ class BppIssueService {
       };
 
       logger.info(
-        `Issue request payload for issue Api: ${JSON.stringify(issueRequest)}`
+        `Issue request payload for issue Api in issueRequest function : ${JSON.stringify(issueRequest)}`
       );
 
       const response: Response = await protocolIssue(issueRequest);

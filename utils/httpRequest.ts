@@ -60,8 +60,7 @@ class HttpRequest {
           params: this.data,
         });
       } else {
-        logger.info(`----this.url, ${this.url}`);
-
+        logger.info(`getting this url from protocol/issue request, ${this.url}`);
         // Make server request using axios
         result = await axios({
           baseURL: this.baseUrl,

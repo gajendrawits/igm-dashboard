@@ -15,7 +15,7 @@ class IssueController {
 
   createIssue(req: any, res: Response) {
     const { body: request, user: userDetails } = req;
-    logger.info(`${JSON.stringify(request)} ===REQUEST FROM CLIENT`);
+    logger.info(`Got Request From Client: createIssue (controllers) ${request}}`);
     issueService
       .createIssue(request, userDetails)
       .then((response) => {
@@ -34,7 +34,7 @@ class IssueController {
    */
   getIssuesList(req: any, res: Response, next: NextFunction) {
     const { query = {}, user } = req;
-    logger.info(`${user}, "===user=== controller", ${query}`);
+    logger.info(`GetIssueList API - user: ${user}, controller: ${query}`);
 
     issueService
       .getIssuesList(user, query)
@@ -61,6 +61,7 @@ class IssueController {
    */
   getIssue(req: any, res: Response, next: NextFunction) {
     const { query = {} } = req;
+    logger.info(`getIssue controller function`)
     query?.transactionId
       ? issueService
           .getSingleIssue(query?.transactionId)
@@ -112,7 +113,7 @@ class IssueController {
     const limit = parseInt(req.query.limit as string, 10) || 10;
     const pageNumber = parseInt(req.query.pageNumber as string, 10) || 1;
 
-    logger.info(`getAllIssuesList limit ${limit} pageNumber${pageNumber}`);
+    logger.info(`getAllIssueList API (Controllers):  Limit ${limit} pageNumber${pageNumber}`);
 
     const response: any = await issueService.getAllIssuesList({
       limit: limit,
@@ -120,6 +121,7 @@ class IssueController {
     });
 
     logger.info(`getAllIssuesList response ${JSON.stringify(response)}`);
+    logger.info(`getAllIssuesList response ${response}`);
 
     return res.status(200).send({
       data: response,
@@ -134,6 +136,7 @@ class IssueController {
 
   async getAllIssuesExcel(req: Request, res: Response, _next: NextFunction) {
     try {
+      logger.info(`issue in excel: getAllIssuesExcel`)
       const { from, to } = req.query;
 
       // Validate that both 'from' and 'to' are present

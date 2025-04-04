@@ -47,9 +47,7 @@ const protocolIssue = async (data: IssueRequest) => {
  * @returns
  */
 const protocolIssueStatus = async (data: any) => {
-  logger.info("Issue status request payload", JSON.stringify(data));
-  console.log(JSON.stringify(data));
-
+  logger.info("Fetching Issue status request from protocolIssueStatus", JSON.stringify(data));
   const apiCall = new HttpRequest(
     process.env.PROTOCOL_BASE_URL,
     PROTOCOL_API_URLS.ISSUE_STATUS,
@@ -61,7 +59,7 @@ const protocolIssueStatus = async (data: any) => {
 
   const result = await apiCall.send();
 
-  logger.info("IssueStatus seller response", JSON.stringify(result.data));
+  logger.info("Posting IssueStatus from protocol_Base_Url", JSON.stringify(result.data));
   return result.data;
 };
 
@@ -79,7 +77,7 @@ const onIssueStatus = async (messageId: string) => {
   const result = await apiCall.send();
 
   logger.info(
-    "OnIssueStats -> Seller response for On Issue status",
+    "OnIssueStatus ->  On_Issue_Status response from seller",
     JSON.stringify(result.data)
   );
   return result.data;
@@ -99,7 +97,7 @@ const onIssueOrder = async (messageId: string) => {
 
   const result = await apiCall.send();
   logger.info(
-    "onIssue -> Seller response for On Issue status",
+    "onIssueOrder -> On_issue Order response from seller ",
     JSON.stringify(result.data)
   );
   return result.data;
@@ -119,7 +117,7 @@ const onIssue_status = async (messageId: any) => {
 
   const result = await apiCall.send();
   logger.info(
-    "OnIssueStats -> Seller response for On Issue status",
+    "OnIssueStats -> Getting On_Issue_Status Response from seller",
     JSON.stringify(result.data)
   );
   return result.data;

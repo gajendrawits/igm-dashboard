@@ -1,4 +1,5 @@
 import { protocolIssueStatus } from "../../utils/protocolApis";
+import {logger} from '../../shared/logger'
 
 class BppIssueStatusService {
   /**
@@ -9,6 +10,7 @@ class BppIssueStatusService {
    */
   async getIssueStatus(context: any, message: object = {}) {
     try {
+      logger.info(`In bpp issue_status.service`)
       const issueStatusRequest = {
         context: context,
         message: message,

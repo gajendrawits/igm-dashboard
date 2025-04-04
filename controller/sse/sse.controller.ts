@@ -57,7 +57,7 @@ class SseController {
   onStatus(req: Request, res: Response, next: NextFunction) {
     const { body: response } = req;
     const { messageId } = response;
-    logger.info(`Response before issueStatusService being hit, ${JSON.stringify(response)}`);
+    logger.info(`Getting Response before issueStatusService being hit, ${JSON.stringify(response)}`);
 
     issueStatusService
       .onIssueStatus(messageId)

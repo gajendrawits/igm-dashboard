@@ -44,7 +44,7 @@ class BugzillaService {
       );
       const result = await apiCall.send();
       if (result.status === 201) {
-        logger.info("Created issue in Bugzilla");
+        logger.info("Issue Created in Bugzilla ");
         return result.data;
       }
     } catch (error: any) {
@@ -73,7 +73,7 @@ class BugzillaService {
       );
       const result = await apiCall.send();
       if (result.status === 200) {
-        logger.info("Issue updated in Bugzilla");
+        logger.info("Updated Issue in Bugzilla");
       }
     } catch (error) {
       logger.info("Error in updating issue in Bugzilla", error);

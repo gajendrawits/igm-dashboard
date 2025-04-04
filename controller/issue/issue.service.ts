@@ -14,7 +14,7 @@ import {
   addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
   getIssueByOrderId,
-  addOrUpdateIssueWithIssueId
+  // addOrUpdateIssueWithIssueId
 } from "../../utils/dbservice";
 
 const bppIssueService = new BppIssueService();
@@ -231,7 +231,7 @@ class IssueService {
    */
   async createIssue(issueRequest: IssueRequest, userDetails: any) {
     try {
-      logger.info(`===userDetails===service ${userDetails}`);
+      logger.info(`userDetails while creating user:createIssue (services) ${userDetails}`);
       const { context: requestContext, message }: IssueRequest = issueRequest;
       const issue: IssueProps = message.issue;
       const contextFactory = new ContextFactory();
@@ -249,6 +249,7 @@ class IssueService {
         "🚀 ~ file: issue.service.ts:246 ~ IssueService ~ createIssue ~ context:",
         context
       );
+      logger.info(`after getting context`)
 
       if (message?.issue?.rating || message?.issue?.issue_type) {
         const existingIssue: IssueProps = await getIssueByTransactionId(
@@ -263,6 +264,7 @@ class IssueService {
           city: requestContext?.city,
           state: requestContext?.state,
         });
+        logger.info(`contextFactory Created`)
         const bppResponse: any = await bppIssueService.closeOrEscalateIssue(
           context,
           { ...issue, id: existingIssue.issueId }
@@ -363,6 +365,7 @@ class IssueService {
 
   async findIssues(user: any, params: IParamProps) {
     try {
+      logger.info(`Query for limit and skip in params: getIssueList`)
       let { limit = 10, pageNumber = 1 } = params;
 
       let skip = (pageNumber - 1) * limit;
@@ -390,8 +393,9 @@ class IssueService {
   async getIssuesList(user: any, params: IParamProps) {
     try {
       const { issues, totalCount } = await this.findIssues(user, params);
+    
       logger.info(
-        ` ===getIssuesList service issues=== ${JSON.stringify(issues)}`
+        `getting issues in getIssuesList service with limit filter ${JSON.stringify(issues)}`
       );
       if (!issues.length) {
         return {
@@ -408,7 +412,7 @@ class IssueService {
       }
     } catch (err) {
       logger.info(
-        `getIssuesList Issue in getting all issue, ${JSON.stringify(err)}`
+        `facing Issue while fetching all issues list, ${JSON.stringify(err)}`
       );
       throw err;
     }
@@ -420,7 +424,9 @@ class IssueService {
    */
   async onIssueOrder(messageId: string) {
     try {
+   
       const protocolIssueResponse = await onIssueOrder(messageId);
+      logger.info(`On_Issue order protocol response`)
 
       if (
         !(protocolIssueResponse && protocolIssueResponse.length) ||
@@ -449,18 +455,19 @@ class IssueService {
 
         issue.issue_actions.respondent_actions = respondent_actions;
 
-        // await addOrUpdateIssueWithtransactionId(
-        //   protocolIssueResponse?.[0]?.context?.transaction_id,
-        //   issue
-        // );
-        await addOrUpdateIssueWithIssueId(
+        await addOrUpdateIssueWithtransactionId(
           protocolIssueResponse?.[0]?.context?.transaction_id,
-          protocolIssueResponse?.[0]?.message?.issue?.sub_category,
-          protocolIssueResponse?.[0]?.context?.issueId,
-
           issue
-        )
+        );
+        // await addOrUpdateIssueWithIssueId(
+        //   protocolIssueResponse?.[0]?.context?.transaction_id,
+        //   protocolIssueResponse?.[0]?.message?.issue?.sub_category,
+        //   protocolIssueResponse?.[0]?.context?.issueId,
 
+        //   issue
+        // )
+        logger.info("Before updating issue in bugzilla")
+        
         if (
           process.env.BUGZILLA_API_KEY ||
           process.env.SELECTED_ISSUE_CRM == "trudesk"
@@ -470,11 +477,13 @@ class IssueService {
             issue.issue_actions
           );
         }
+        logger.info("After updating issue in bugzilla")
 
         return this.transform(protocolIssueResponse?.[0]);
       }
     } catch (err) {
-      logger.info(`Issue in on_issuee, ${JSON.stringify(err)}`);
+   
+      logger.info(`facing issue in on_issue service, ${JSON.stringify(err)}`);
       throw err;
     }
   }
@@ -491,15 +500,18 @@ class IssueService {
       const issue: IssueProps = await getIssueByTransactionId(transactionId);
 
       if (issue) {
+        logger.info("Issue found with transactionId: getSingleIssue")
         return { issueExistance: true, issue };
       } else {
+        
+        logger.info("Issue not found with transactionId: getSingleIssue")
         return { issueExistance: false };
       }
     } catch (err: any) {
-      logger.info(`
-        "Issue in getSingleIssue by transaction id",
-        ${JSON.stringify(err)}
-      `);
+     
+      logger.info(
+        `facing issue in getting Single Issue by transaction_id, ${err}`
+      );
       throw err;
     }
   }
@@ -510,13 +522,15 @@ class IssueService {
       const issue: any = await getIssueByOrderId(orderID);
 
       if (issue) {
+        logger.info(`issue found with this orderId: getIssueByOrderID`)
         return { issue };
       } else {
+        logger.info(`Issue not found with this orderId: getIssueByOrderId`)
         return { issueExistance: false };
       }
     } catch (err: any) {
       logger.info(
-        `Issue in getSingleIssue by getIssueByOrderID: ${JSON.stringify(err)}`
+        `Issue response not found in getSingleIssue by getIssueByOrderID: ${JSON.stringify(err)}`
       );
       throw err;
     }
@@ -527,11 +541,11 @@ class IssueService {
       let { limit = 10, pageNumber = 1 } = params;
 
       let skip = (pageNumber - 1) * limit;
-      logger.info(`getAllIssuesList skip ${skip} pageNumber${pageNumber}`);
+      logger.info(`getAllIssuesList service skip: ${skip} pageNumber: ${pageNumber}`);
       const issues = await Issue.find().limit(limit).skip(skip);
 
       const totalCount = await Issue.countDocuments();
-      logger.info(`getAllIssuesList ${JSON.stringify(issues)}`);
+      logger.info(`getAllIssuesList countDocuments ${JSON.stringify(issues)}`);
       if (!issues.length) {
         return {
           error: {
@@ -546,7 +560,7 @@ class IssueService {
         };
       }
     } catch (err) {
-      logger.info(`Issue in getting all issue, ${JSON.stringify(err)}`);
+      logger.info(`No response found for Issue in getting all issue, ${JSON.stringify(err)}`);
       throw err;
     }
   }

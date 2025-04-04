@@ -21,7 +21,7 @@ console.log(secret, "==secret");
 
 const tokenExtractor = (req: Request): any => {
   const token = req.get(HEADERS.ACCESS_TOKEN) || null;
-  logger.info(`${token},"===token===="`);
+  logger.info(`${token},"JWT token"`);
   if (!token) {
     throw new UnauthenticatedError(
       MESSAGES.LOGIN_ERROR_USER_ACCESS_TOKEN_INVALID
@@ -42,7 +42,7 @@ const passportJwtStrategy = new JwtStrategy(
   async (req: any, jwtPayload: any, done: any) => {
     try {
       let user: any = {};
-      logger.info(`${jwtPayload},"==jwtPayload`);
+      logger.info(`${jwtPayload},"JwtPayload`);
       if (jwtPayload.user) {
         user = jwtPayload.user;
         // user.isGuest = jwtPayload.isGuest;

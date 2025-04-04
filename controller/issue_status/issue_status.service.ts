@@ -1,12 +1,13 @@
 import { onIssue_status } from "../../utils/protocolApis";
+import {logger} from "../../shared/logger"
 import Issue from "../../database/issue.model";
 import { PROTOCOL_CONTEXT } from "../../shared/constants";
 import ContextFactory from "../../utils/contextFactory";
 import BppIssueStatusService from "./bpp.issue_status.service";
 import {
-  // addOrUpdateIssueWithtransactionId,
+  addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
-  addOrUpdateIssueWithIssueId
+  // addOrUpdateIssueWithIssueId
 } from "../../utils/dbservice";
 import { IssueProps, RespondentActions } from "../../interfaces/issue";
 import BugzillaService from "../../controller/bugzilla/bugzilla.service";
@@ -18,7 +19,8 @@ class IssueStatusService {
     const issue: any = await Issue.find({
       issueId: issueId,
     });
-    console.log(issueId, "this issue is from db")
+  
+    logger.info(`verifying issue id from db in issue_status service ${issueId}`)
 
     if (!(issue || issue.length))
       return {
@@ -36,10 +38,13 @@ class IssueStatusService {
   async issue_status(order: any) {
     try {
       const { context: requestContext, message } = order;
-      console.log(message?.issue_id)
-      console.log(message, "this is from msg")
+     
+      logger.info(message?.issue_id)
+      
+      logger.info(`${message}, message from issue_status: issue_status.service`)
 
       const issueDetails = await this.getIssueByIssueId(message?.issue_id);
+      logger.info(`issueDetails in issue_status.services`)
 
       const contextFactory = new ContextFactory();
       const context = contextFactory.create({
@@ -63,7 +68,8 @@ class IssueStatusService {
    */
   async onIssueStatus(messageId: Object) {
     try {
-      console.log("messageId", messageId);
+
+      logger.info(`messageId in issue_status.service, ${messageId}`)
       const protocolSupportResponse = await onIssue_status(messageId);
       if (protocolSupportResponse && protocolSupportResponse.length) {
         const respondent_actions =
@@ -93,17 +99,17 @@ class IssueStatusService {
           protocolSupportResponse?.[0]?.message?.issue?.resolution;
 
         issue.issue_actions.complainant_actions = complainant_action;
-        // await addOrUpdateIssueWithtransactionId(
-        //   protocolSupportResponse?.[0]?.context?.transaction_id,
-        //   issue
-        // );
-        await addOrUpdateIssueWithIssueId(
+        await addOrUpdateIssueWithtransactionId(
           protocolSupportResponse?.[0]?.context?.transaction_id,
-          protocolSupportResponse?.[0]?.message?.issue?.sub_category,
-          protocolSupportResponse?.[0]?.context?.issueId,
-
           issue
-        )
+        );
+        // await addOrUpdateIssueWithIssueId(
+        //   protocolSupportResponse?.[0]?.context?.transaction_id,
+        //   protocolSupportResponse?.[0]?.message?.issue?.sub_category,
+        //   protocolSupportResponse?.[0]?.context?.issueId,
+
+        //   issue
+        // )
 
         if (process.env.BUGZILLA_API_KEY || process.env.SELECTED_ISSUE_CRM) {
           bugzillaService.updateIssueInBugzilla(
