@@ -250,7 +250,7 @@ class IssueController {
           issue_status: issue.issue_status,
           created_at: issue.created_at,
           updated_at: issue.updated_at,
-          ticket_no: issue._id || "", // Example, if there's a ticket number
+          ticket_no: issue._id, // Example, if there's a ticket number
           assignee: issue.assignee || "",
           owner: issue.owner || "",
           group: issue.group || "",
