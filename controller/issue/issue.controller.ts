@@ -5,11 +5,6 @@ import { protocolIssueStatus } from "../../utils/protocolApis";
 import ContextFactory from "../../utils/contextFactory";
 import { PROTOCOL_CONTEXT } from "../../shared/constants";
 import ExcelJS from "exceljs";
-// import HttpRequest from "../../utils/httpRequest";
-// import PROTOCOL_API_URLS from "../../shared/protocolRoutes";
-
-import cron from "node-cron";
-// import { MongoClient, Document } from "mongodb";
 import Issue from "../../database/issue.model";
 const issueService = new IssueService();
 
@@ -291,47 +286,47 @@ class IssueController {
 
 //  Validate and safely assign env vars
 
-export const startIssueStatusCron = () => {
-  cron.schedule('*/10 * * * * *', async () => {
-    try {
-      // Step 1: Fetch issues from DB where issue_status is 'Open' and issueId exists
-      const issues = await Issue.find({ issue_status: 'Open', issueId: { $exists: true } });
+export const startIssueStatusCron = async () => {
+  try {
+    // Step 1: Fetch issues from DB where issue_status is 'Open' and issueId exists
+    const issues = await Issue.find({ issue_status: 'Open', issueId: { $exists: true } });
 
-      if (!issues.length) {
-        logger.info('No open issues found to check status');
-        return;
-      }
-
-      for (const issue of issues) {
-        // Step 2: Construct context for each issue
-        const contextFactory = new ContextFactory();
-        const context = contextFactory.create({
-          domain: issue.domain,
-          action: PROTOCOL_CONTEXT.ISSUE_STATUS,
-          transactionId: issue.transaction_id,
-          bppId: issue.bppId,
-          bpp_uri: issue.bpp_uri,
-          cityCode: issue.order_details?.city,
-        });
-
-        // Step 3: Construct payload
-        const issueStatusRequest = {
-          context,
-          message: {
-            issue_id: issue.issueId,
-          },
-        };
-
-        // Step 4: Hit the protocol to get issue status
-        const response = await protocolIssueStatus(issueStatusRequest);
-        logger.info(`✅ Issue status response for ${issue.issueId}:`, JSON.stringify(response));
-      }
-
-    } catch (error) {
-      logger.error('❌ Error in issue status cron job:', error);
+    if (!issues.length) {
+      logger.info('No open issues found to check status');
+      return;
     }
-  });
+
+    for (const issue of issues) {
+      // Step 2: Construct context for each issue
+      const contextFactory = new ContextFactory();
+      const context = contextFactory.create({
+        domain: issue.domain,
+        action: PROTOCOL_CONTEXT.ISSUE_STATUS,
+        transactionId: issue.transaction_id,
+        bppId: issue.bppId,
+        bpp_uri: issue.bpp_uri,
+        cityCode: issue.order_details?.city,
+      });
+
+      // Step 3: Construct payload
+      const issueStatusRequest = {
+        context,
+        message: {
+          issue_id: issue.issueId,
+        },
+      };
+
+      // Step 4: Hit the protocol to get issue status
+      const response = await protocolIssueStatus(issueStatusRequest);
+      logger.info(`✅ Issue status response for ${issue.issueId}:`, JSON.stringify(response));
+    }
+
+  } catch (error) {
+    logger.error('❌ Error in issue status execution at startup:', error);
+  }
 };
-startIssueStatusCron()
+
+// Run once on server start
+startIssueStatusCron();
 
 export default IssueController;
