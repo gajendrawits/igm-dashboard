@@ -304,13 +304,18 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, errorMessage: st
   return Promise.race([promise, timeout]);
 }
 
-// Function to get status for a given messageId using GET request
+// Function to get status for a given messageId using POST request
 async function getStatus(messageId: string): Promise<string> {
   try {
+    // ✅ Construct the full URL safely
+    const fullUrl = new URL(PROTOCOL_API_URLS.ISSUE_STATUS, PROTOCOL_BASE_URL).toString();
+    console.log("🚀 ~ getStatus ~ fullUrl:", fullUrl)
+
     const apiCall = new HttpRequest(
-      PROTOCOL_BASE_URL,
-      `${PROTOCOL_API_URLS.ISSUE_STATUS}?messageId=${messageId}`,
-      'get'
+      fullUrl,    // ✅ Full URL passed directly
+      '',         // ❌ No separate path needed
+      'post',
+      { messageId }
     );
 
     const response = await apiCall.send();
@@ -319,7 +324,7 @@ async function getStatus(messageId: string): Promise<string> {
     return status;
   } catch (error: any) {
     console.error(`❌ [${messageId}] Failed to fetch status: ${error.message}`);
-    return 'Error'; // Return 'Error' on failure or timeout
+    return 'Error';
   }
 }
 
@@ -328,12 +333,10 @@ async function fetchAndCheckStatus(): Promise<void> {
   let client: MongoClient | null = null;
 
   try {
-    // Connect to MongoDB
     client = await MongoClient.connect(DB_CONNECTION_STRING);
     const db = client.db(MONGO_DATABASE);
     const collection = db.collection('issues');
 
-    // Fetch all message_ids from the database
     const messageDocs: Document[] = await collection
       .find({ message_id: { $exists: true } }, { projection: { message_id: 1 } })
       .toArray();
@@ -345,21 +348,19 @@ async function fetchAndCheckStatus(): Promise<void> {
       return;
     }
 
-    // Process each message ID sequentially, with timeout
     let processedCount = 0;
     for (const doc of messageDocs) {
       const messageId = doc.message_id;
       console.log(`🚀 [${processedCount + 1}/${messageDocs.length}] Processing message ID: ${messageId}`);
 
-      // Wrap getStatus with a 5-second timeout (adjustable)
       const statusPromise = getStatus(messageId);
       const status = await withTimeout(
         statusPromise,
-        5000, // 5 seconds timeout
+        5000,
         `Timeout: No response for ${messageId} after 5 seconds`
       ).catch((err) => {
         console.error(`⏳ [${messageId}] ${err.message}`);
-        return 'Error'; // Treat timeout as an error and move on
+        return 'Error';
       });
 
       console.log(`📋 [${messageId}] Issue Status: ${status}`);
@@ -377,7 +378,6 @@ async function fetchAndCheckStatus(): Promise<void> {
 
   } catch (err) {
     console.error('❌ Critical error in cron job (e.g., DB connection):', err);
-    // Cron will retry on next run
   } finally {
     if (client) {
       try {
@@ -395,7 +395,6 @@ cron.schedule('*/5 * * * * *', () => {
   console.log('⏰ Cron job started at:', new Date().toISOString());
   fetchAndCheckStatus().catch((err) => {
     console.error('❌ Unhandled error in fetchAndCheckStatus:', err);
-    // Prevents cron from stopping
   });
 });
 
