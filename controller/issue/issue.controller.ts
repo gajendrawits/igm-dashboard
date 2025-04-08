@@ -1,3 +1,5 @@
+
+
 import { Response, NextFunction, Request } from "express";
 import IssueService from "./issue.service";
 import { logger } from "../../shared/logger";
@@ -193,6 +195,7 @@ class IssueController {
       // Define columns for the worksheet
       worksheet.columns = [
         { header: "S no", key: "s_no" },
+        { header: "respondent_actions", key: "respondent_actions" },
         { header: "Ticket #", key: "ticket_no" },
         { header: "Item", key: "item" },
         { header: "Network ID", key: "network_id" },
@@ -226,6 +229,7 @@ class IssueController {
         return {
           s_no: index + 1,
           transaction_id: issue.transaction_id,
+          respondent_actions: JSON.stringify(issue.issue_actions.respondent_actions),
           network_id: issue.transaction_id,
           category: issue.category,
           sub_category: issue.sub_category,
@@ -251,7 +255,7 @@ class IssueController {
           owner: issue.owner || "",
           group: issue.group || "",
           additional_desc_content_type:
-            issue.additional_desc_content_type || "",
+          issue.additional_desc_content_type || "",
         };
       });
 
@@ -307,6 +311,8 @@ export const startIssueStatusCron = async () => {
         bpp_uri: issue.bpp_uri,
         cityCode: issue.order_details?.city,
       });
+      console.log("🚀 ~ startIssueStatusCron ~ contextFactory:")
+      
 
       // Step 3: Construct payload
       const issueStatusRequest = {
