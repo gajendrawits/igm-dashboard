@@ -286,86 +286,119 @@ class IssueController {
 //  */
 
 //  Validate and safely assign env vars
+
 const PROTOCOL_BASE_URL = process.env.PROTOCOL_BASE_URL as string;
 const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING as string;
 const MONGO_DATABASE = process.env.MONGO_DATABASE as string;
 
+// Validate environment variables
 if (!PROTOCOL_BASE_URL || !DB_CONNECTION_STRING || !MONGO_DATABASE) {
   throw new Error("❌ Missing one or more required environment variables.");
 }
 
-// ✅ Send POST request with context and messageId
-async function getStatus(messageId: string, context: any): Promise<string> {
+// Utility function to add timeout to a promise
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> {
+  const timeout = new Promise<T>((_, reject) =>
+    setTimeout(() => reject(new Error(errorMessage)), timeoutMs)
+  );
+  return Promise.race([promise, timeout]);
+}
+
+// Function to get status for a given messageId using GET request
+async function getStatus(messageId: string): Promise<string> {
   try {
     const apiCall = new HttpRequest(
       PROTOCOL_BASE_URL,
-      PROTOCOL_API_URLS.ISSUE_STATUS,
-      "post",
-      {
-        messageId,
-        context
-      }
+      `${PROTOCOL_API_URLS.ISSUE_STATUS}?messageId=${messageId}`,
+      'get'
     );
 
     const response = await apiCall.send();
-    console.log(`📡 Status response for ${messageId}:`, response);
-    return String(response.status ?? 'Unknown');
+    const status = String(response.status ?? 'Unknown');
+    console.log(`📡 [${messageId}] Status retrieved: ${status}`);
+    return status;
   } catch (error: any) {
-    console.error(`❌ Failed to fetch status for ${messageId}:`, error.message);
-    return 'Error';
+    console.error(`❌ [${messageId}] Failed to fetch status: ${error.message}`);
+    return 'Error'; // Return 'Error' on failure or timeout
   }
 }
 
-// ✅ Fetch message_ids and their context from MongoDB
-export async function fetchMessageIdsAndCheckStatus(): Promise<void> {
+// Cron job to fetch message IDs and check their status
+async function fetchAndCheckStatus(): Promise<void> {
   let client: MongoClient | null = null;
 
   try {
+    // Connect to MongoDB
     client = await MongoClient.connect(DB_CONNECTION_STRING);
     const db = client.db(MONGO_DATABASE);
     const collection = db.collection('issues');
 
-    const results: Document[] = await collection
-      .find({}, { projection: { message_id: 1, context: 1 } })
+    // Fetch all message_ids from the database
+    const messageDocs: Document[] = await collection
+      .find({ message_id: { $exists: true } }, { projection: { message_id: 1 } })
       .toArray();
 
-    for (const doc of results) {
-      const messageId = doc.message_id;
-      const context = doc.context;
+    console.log(`📥 Retrieved ${messageDocs.length} message IDs from database`);
 
-      if (!messageId || typeof messageId !== 'string') {
-        console.warn(`⚠️ Invalid or missing message_id in document:`, doc);
-        continue;
-      }
-
-      if (!context || typeof context !== 'object') {
-        console.warn(`⚠️ No context found for message_id: ${messageId}`);
-        continue;
-      }
-
-      const status = await getStatus(messageId, context);
-
-      if (status === 'Error' || status === 'Unknown') {
-        console.warn(`⚠️ Skipping ${messageId} due to status error.`);
-        continue;
-      }
-
-      console.log(`✅ Status for ${messageId}: ${status}`);
+    if (messageDocs.length === 0) {
+      console.log("📭 No message IDs found in database");
+      return;
     }
 
+    // Process each message ID sequentially, with timeout
+    let processedCount = 0;
+    for (const doc of messageDocs) {
+      const messageId = doc.message_id;
+      console.log(`🚀 [${processedCount + 1}/${messageDocs.length}] Processing message ID: ${messageId}`);
+
+      // Wrap getStatus with a 5-second timeout (adjustable)
+      const statusPromise = getStatus(messageId);
+      const status = await withTimeout(
+        statusPromise,
+        5000, // 5 seconds timeout
+        `Timeout: No response for ${messageId} after 5 seconds`
+      ).catch((err) => {
+        console.error(`⏳ [${messageId}] ${err.message}`);
+        return 'Error'; // Treat timeout as an error and move on
+      });
+
+      console.log(`📋 [${messageId}] Issue Status: ${status}`);
+
+      if (status === 'Error') {
+        console.warn(`⚠️ [${messageId}] Status check failed or timed out, continuing to next message`);
+      } else {
+        console.log(`✅ [${messageId}] Successfully retrieved status: ${status}`);
+      }
+
+      processedCount++;
+    }
+
+    console.log(`🏁 Finished processing ${processedCount} message IDs`);
+
   } catch (err) {
-    console.error('❌ Cron job error:', err);
+    console.error('❌ Critical error in cron job (e.g., DB connection):', err);
+    // Cron will retry on next run
   } finally {
     if (client) {
-      await client.close();
+      try {
+        await client.close();
+        console.log('🔌 Database connection closed');
+      } catch (closeErr) {
+        console.error('❌ Error closing DB connection:', closeErr);
+      }
     }
   }
 }
 
-// ⏰ Run every 5 seconds
+// Schedule the cron job (every 5 seconds)
 cron.schedule('*/5 * * * * *', () => {
-  console.log('⏰ Cron job running at:', new Date().toISOString());
-  fetchMessageIdsAndCheckStatus();
+  console.log('⏰ Cron job started at:', new Date().toISOString());
+  fetchAndCheckStatus().catch((err) => {
+    console.error('❌ Unhandled error in fetchAndCheckStatus:', err);
+    // Prevents cron from stopping
+  });
 });
+
+console.log('Cron job scheduler initialized');
 
 export default IssueController;
