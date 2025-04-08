@@ -2,6 +2,10 @@ import { Response, NextFunction, Request } from "express";
 import IssueService from "./issue.service";
 import { logger } from "../../shared/logger";
 import ExcelJS from "exceljs";
+import HttpRequest from "../../utils/httpRequest";
+import  PROTOCOL_API_URLS from "../../shared/protocolRoutes";
+import cron from 'node-cron';
+import { MongoClient, Document } from 'mongodb';
 import Issue from "../../database/issue.model";
 const issueService = new IssueService();
 
@@ -270,5 +274,80 @@ class IssueController {
     }
   }
 }
+ // /**
+  //  * Cron Job
+  //  * @param {*} req    HTTP request object
+  //  * @param {*} res    HTTP response object
+  //  * @param {*} next   Callback argument to the middleware function
+  //  */
+
+
+  const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING!;
+  const MONGO_DATABASE = process.env.MONGO_DATABASE!;
+  const BASE_URL = process.env.PROTOCOL_BASE_URL!;
+  
+  // 🟢 Send POST request using HttpRequest class
+  async function getStatus(messageId: string): Promise<string> {
+    try {
+      const apiCall = new HttpRequest(
+        BASE_URL,
+        PROTOCOL_API_URLS.ISSUE_STATUS,
+        "post",
+        { messageId }
+      );
+  
+      const response = await apiCall.send();
+      console.log(`📡 Status response for ${messageId}:`, response);
+  
+      return String(response.status ?? 'Unknown');
+    } catch (error: any) {
+      console.error(`❌ Failed to fetch status for ${messageId}:`, error.message);
+      return 'Error';
+    }
+  }
+  
+  // 🟢 Fetch message_ids from MongoDB, call getStatus for each
+  export async function fetchMessageIdsAndCheckStatus(): Promise<void> {
+    let client: MongoClient | null = null;
+  
+    try {
+      client = await MongoClient.connect(DB_CONNECTION_STRING);
+      const db = client.db(MONGO_DATABASE);
+      const collection = db.collection('issues');
+  
+      const results: Document[] = await collection
+        .find({}, { projection: { message_id: 1 } })
+        .limit(10)
+        .toArray();
+  
+      const messageIds: string[] = results
+        .map(doc => doc.message_id)
+        .filter((id): id is string => typeof id === 'string');
+  
+      console.log(`📨 Found ${messageIds.length} messageId(s):`, messageIds);
+  
+      for (const messageId of messageIds) {
+        const status = await getStatus(messageId);
+        console.log(`✅ Status for ${messageId}: ${status}`);
+      }
+  
+    } catch (err) {
+      console.error('❌ Cron job error:', err);
+    } finally {
+      if (client) {
+        await client.close();
+      }
+    }
+  }
+  
+  // ⏰ Run every 5 seconds
+  cron.schedule('*/5 * * * * *', () => {
+    console.log('⏰ Cron job running at:', new Date().toISOString());
+    fetchMessageIdsAndCheckStatus();
+  });
+
+
+
+
 
 export default IssueController;
