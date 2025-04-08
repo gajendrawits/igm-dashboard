@@ -327,7 +327,6 @@ export async function fetchMessageIdsAndCheckStatus(): Promise<void> {
 
     const results: Document[] = await collection
       .find({}, { projection: { message_id: 1 } })
-      .limit(10)
       .toArray();
 
     const messageIds: string[] = results
