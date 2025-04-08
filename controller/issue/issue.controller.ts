@@ -293,30 +293,32 @@ const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING as string;
 const MONGO_DATABASE = process.env.MONGO_DATABASE as string;
 
 if (!PROTOCOL_BASE_URL || !DB_CONNECTION_STRING || !MONGO_DATABASE) {
-  throw new Error(" Missing one or more required environment variables.");
+  throw new Error("❌ Missing one or more required environment variables.");
 }
 
-//  Send POST request using HttpRequest class
-async function getStatus(messageId: string): Promise<string> {
+// ✅ Send POST request with context and messageId
+async function getStatus(messageId: string, context: any): Promise<string> {
   try {
     const apiCall = new HttpRequest(
       PROTOCOL_BASE_URL,
       PROTOCOL_API_URLS.ISSUE_STATUS,
       "post",
-      { messageId }
+      {
+        messageId,
+        context
+      }
     );
 
     const response = await apiCall.send();
-    console.log(` Status response for ${messageId}:`, response);
-
+    console.log(`📡 Status response for ${messageId}:`, response);
     return String(response.status ?? 'Unknown');
   } catch (error: any) {
-    console.error(` Failed to fetch status for ${messageId}:`, error.message);
+    console.error(`❌ Failed to fetch status for ${messageId}:`, error.message);
     return 'Error';
   }
 }
 
-//  Fetch message_ids from MongoDB and check their status
+// ✅ Fetch message_ids and their context from MongoDB
 export async function fetchMessageIdsAndCheckStatus(): Promise<void> {
   let client: MongoClient | null = null;
 
@@ -326,28 +328,35 @@ export async function fetchMessageIdsAndCheckStatus(): Promise<void> {
     const collection = db.collection('issues');
 
     const results: Document[] = await collection
-      .find({}, { projection: { message_id: 1 } })
+      .find({}, { projection: { message_id: 1, context: 1 } })
       .toArray();
 
-    const messageIds: string[] = results
-      .map(doc => doc.message_id)
-      .filter((id): id is string => typeof id === 'string');
+    for (const doc of results) {
+      const messageId = doc.message_id;
+      const context = doc.context;
 
-    console.log(` Found ${messageIds.length} messageId(s):`, messageIds);
-
-    for (const messageId of messageIds) {
-      const status = await getStatus(messageId);
-
-      if (status === 'Error' || status === 'Unknown') {
-        console.warn(` Skipping ${messageId} due to invalid status.`);
+      if (!messageId || typeof messageId !== 'string') {
+        console.warn(`⚠️ Invalid or missing message_id in document:`, doc);
         continue;
       }
 
-      console.log(` Status for ${messageId}: ${status}`);
+      if (!context || typeof context !== 'object') {
+        console.warn(`⚠️ No context found for message_id: ${messageId}`);
+        continue;
+      }
+
+      const status = await getStatus(messageId, context);
+
+      if (status === 'Error' || status === 'Unknown') {
+        console.warn(`⚠️ Skipping ${messageId} due to status error.`);
+        continue;
+      }
+
+      console.log(`✅ Status for ${messageId}: ${status}`);
     }
 
   } catch (err) {
-    console.error(' Cron job error:', err);
+    console.error('❌ Cron job error:', err);
   } finally {
     if (client) {
       await client.close();
