@@ -186,6 +186,8 @@ class IssueController {
       // Define columns for the worksheet
       worksheet.columns = [
         { header: "S no", key: "s_no" },
+        // { header: "issueId", key: "issueId" },
+        { header: "respondent_actions", key: "respondent_actions" },
         { header: "Ticket #", key: "ticket_no" },
         { header: "Item", key: "item" },
         { header: "Network ID", key: "network_id" },
@@ -218,7 +220,7 @@ class IssueController {
       const rows = issues.map((issue, index) => {
         return {
           s_no: index + 1,
-          transaction_id: issue.transaction_id,
+          respondent_actions: issue.respondent_actions,
           network_id: issue.transaction_id,
           category: issue.category,
           sub_category: issue.sub_category,
@@ -239,7 +241,7 @@ class IssueController {
           issue_status: issue.issue_status,
           created_at: issue.created_at,
           updated_at: issue.updated_at,
-          ticket_no: issue._id || "", // Example, if there's a ticket number
+          ticket_no: issue._id, // Example, if there's a ticket number
           assignee: issue.assignee || "",
           owner: issue.owner || "",
           group: issue.group || "",
