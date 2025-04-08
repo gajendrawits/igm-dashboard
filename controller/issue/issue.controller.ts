@@ -1,11 +1,15 @@
 import { Response, NextFunction, Request } from "express";
 import IssueService from "./issue.service";
 import { logger } from "../../shared/logger";
+import { protocolIssueStatus } from "../../utils/protocolApis";
+import ContextFactory from "../../utils/contextFactory";
+import { PROTOCOL_CONTEXT } from "../../shared/constants";
 import ExcelJS from "exceljs";
-import HttpRequest from "../../utils/httpRequest";
-import PROTOCOL_API_URLS from "../../shared/protocolRoutes";
+// import HttpRequest from "../../utils/httpRequest";
+// import PROTOCOL_API_URLS from "../../shared/protocolRoutes";
+
 import cron from "node-cron";
-import { MongoClient, Document } from "mongodb";
+// import { MongoClient, Document } from "mongodb";
 import Issue from "../../database/issue.model";
 const issueService = new IssueService();
 
@@ -289,117 +293,47 @@ class IssueController {
 
 //  Validate and safely assign env vars
 
-const PROTOCOL_BASE_URL = process.env.PROTOCOL_BASE_URL as string;
-const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING as string;
-const MONGO_DATABASE = process.env.MONGO_DATABASE as string;
+export const startIssueStatusCron = () => {
+  cron.schedule('*/10 * * * * *', async () => {
+    try {
+      // Step 1: Fetch issues from DB where issue_status is 'Open' and issueId exists
+      const issues = await Issue.find({ issue_status: 'Open', issueId: { $exists: true } });
 
-// Validate environment variables
-if (!PROTOCOL_BASE_URL || !DB_CONNECTION_STRING || !MONGO_DATABASE) {
-  throw new Error("❌ Missing one or more required environment variables.");
-}
-
-// Utility function to add timeout to a promise
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> {
-  const timeout = new Promise<T>((_, reject) =>
-    setTimeout(() => reject(new Error(errorMessage)), timeoutMs)
-  );
-  return Promise.race([promise, timeout]);
-}
-
-// Function to get status for a given messageId using POST request
-async function getStatus(messageId: string): Promise<string> {
-  try {
-    // ✅ Construct the full URL safely
-    const fullUrl = new URL(PROTOCOL_API_URLS.ISSUE_STATUS, PROTOCOL_BASE_URL).toString();
-    console.log("🚀 ~ getStatus ~ fullUrl:", fullUrl)
-
-    const apiCall = new HttpRequest(
-      fullUrl,    // ✅ Full URL passed directly
-      '',         // ❌ No separate path needed
-      'post',
-      { messageId }
-    );
-
-    const response = await apiCall.send();
-    const status = String(response.status ?? 'Unknown');
-    console.log(`📡 [${messageId}] Status retrieved: ${status}`);
-    return status;
-  } catch (error: any) {
-    console.error(`❌ [${messageId}] Failed to fetch status: ${error.message}`);
-    return 'Error';
-  }
-}
-
-// Cron job to fetch message IDs and check their status
-async function fetchAndCheckStatus(): Promise<void> {
-  let client: MongoClient | null = null;
-
-  try {
-    client = await MongoClient.connect(DB_CONNECTION_STRING);
-    const db = client.db(MONGO_DATABASE);
-    const collection = db.collection('issues');
-
-    const messageDocs: Document[] = await collection
-      .find({ message_id: { $exists: true } }, { projection: { message_id: 1 } })
-      .toArray();
-
-    console.log(`📥 Retrieved ${messageDocs.length} message IDs from database`);
-
-    if (messageDocs.length === 0) {
-      console.log("📭 No message IDs found in database");
-      return;
-    }
-
-    let processedCount = 0;
-    for (const doc of messageDocs) {
-      const messageId = doc.message_id;
-      console.log(`🚀 [${processedCount + 1}/${messageDocs.length}] Processing message ID: ${messageId}`);
-
-      const statusPromise = getStatus(messageId);
-      const status = await withTimeout(
-        statusPromise,
-        5000,
-        `Timeout: No response for ${messageId} after 5 seconds`
-      ).catch((err) => {
-        console.error(`⏳ [${messageId}] ${err.message}`);
-        return 'Error';
-      });
-
-      console.log(`📋 [${messageId}] Issue Status: ${status}`);
-
-      if (status === 'Error') {
-        console.warn(`⚠️ [${messageId}] Status check failed or timed out, continuing to next message`);
-      } else {
-        console.log(`✅ [${messageId}] Successfully retrieved status: ${status}`);
+      if (!issues.length) {
+        logger.info('No open issues found to check status');
+        return;
       }
 
-      processedCount++;
-    }
+      for (const issue of issues) {
+        // Step 2: Construct context for each issue
+        const contextFactory = new ContextFactory();
+        const context = contextFactory.create({
+          domain: issue.domain,
+          action: PROTOCOL_CONTEXT.ISSUE_STATUS,
+          transactionId: issue.transaction_id,
+          bppId: issue.bppId,
+          bpp_uri: issue.bpp_uri,
+          cityCode: issue.order_details?.city,
+        });
 
-    console.log(`🏁 Finished processing ${processedCount} message IDs`);
+        // Step 3: Construct payload
+        const issueStatusRequest = {
+          context,
+          message: {
+            issue_id: issue.issueId,
+          },
+        };
 
-  } catch (err) {
-    console.error('❌ Critical error in cron job (e.g., DB connection):', err);
-  } finally {
-    if (client) {
-      try {
-        await client.close();
-        console.log('🔌 Database connection closed');
-      } catch (closeErr) {
-        console.error('❌ Error closing DB connection:', closeErr);
+        // Step 4: Hit the protocol to get issue status
+        const response = await protocolIssueStatus(issueStatusRequest);
+        logger.info(`✅ Issue status response for ${issue.issueId}:`, JSON.stringify(response));
       }
-    }
-  }
-}
 
-// Schedule the cron job (every 5 seconds)
-cron.schedule('*/5 * * * * *', () => {
-  console.log('⏰ Cron job started at:', new Date().toISOString());
-  fetchAndCheckStatus().catch((err) => {
-    console.error('❌ Unhandled error in fetchAndCheckStatus:', err);
+    } catch (error) {
+      logger.error('❌ Error in issue status cron job:', error);
+    }
   });
-});
-
-console.log('Cron job scheduler initialized');
+};
+startIssueStatusCron()
 
 export default IssueController;
