@@ -1,5 +1,3 @@
-
-
 import { Response, NextFunction, Request } from "express";
 import IssueService from "./issue.service";
 import { logger } from "../../shared/logger";
@@ -229,7 +227,9 @@ class IssueController {
         return {
           s_no: index + 1,
           transaction_id: issue.transaction_id,
-          respondent_actions: JSON.stringify(issue.issue_actions.respondent_actions),
+          respondent_actions: JSON.stringify(
+            issue.issue_actions.respondent_actions
+          ),
           network_id: issue.transaction_id,
           category: issue.category,
           sub_category: issue.sub_category,
@@ -255,7 +255,7 @@ class IssueController {
           owner: issue.owner || "",
           group: issue.group || "",
           additional_desc_content_type:
-          issue.additional_desc_content_type || "",
+            issue.additional_desc_content_type || "",
         };
       });
 
@@ -293,10 +293,13 @@ class IssueController {
 export const startIssueStatusCron = async () => {
   try {
     // Step 1: Fetch issues from DB where issue_status is 'Open' and issueId exists
-    const issues = await Issue.find({ issue_status: 'Open', issueId: { $exists: true } });
+    const issues = await Issue.find({
+      issue_status: "Open",
+      issueId: { $exists: true },
+    });
 
     if (!issues.length) {
-      logger.info('No open issues found to check status');
+      logger.info("No open issues found to check status");
       return;
     }
 
@@ -311,8 +314,7 @@ export const startIssueStatusCron = async () => {
         bpp_uri: issue.bpp_uri,
         cityCode: issue.order_details?.city,
       });
-      console.log("🚀 ~ startIssueStatusCron ~ contextFactory:")
-      
+      console.log("🚀 ~ startIssueStatusCron ~ contextFactory:");
 
       // Step 3: Construct payload
       const issueStatusRequest = {
@@ -324,11 +326,13 @@ export const startIssueStatusCron = async () => {
 
       // Step 4: Hit the protocol to get issue status
       const response = await protocolIssueStatus(issueStatusRequest);
-      logger.info(`✅ Issue status response for ${issue.issueId}:`, JSON.stringify(response));
+      logger.info(
+        `✅ Issue status response for ${issue.issueId}:`,
+        JSON.stringify(response)
+      );
     }
-
   } catch (error) {
-    logger.error('❌ Error in issue status execution at startup:', error);
+    logger.error("❌ Error in issue status execution at startup:", error);
   }
 };
 
