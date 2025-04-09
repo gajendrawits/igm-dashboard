@@ -307,41 +307,49 @@ const startIssueStatusCron = async () => {
     }
 
     for (const issue of issues) {
-      // Step 2: Construct context for each issue
-      const contextFactory = new ContextFactory();
-      const context = contextFactory.create({
-        domain: issue.domain,
-        action: PROTOCOL_CONTEXT.ISSUE_STATUS,
-        transactionId: issue.transaction_id,
-        bppId: issue.bppId,
-        bpp_uri: issue.bpp_uri,
-        cityCode: issue.order_details?.city,
-      });
-      console.log("🚀 ~ startIssueStatusCron ~ contextFactory:");
+      try {
+        // Step 2: Construct context for each issue
+        const contextFactory = new ContextFactory();
+        const context = contextFactory.create({
+          domain: issue.domain,
+          action: PROTOCOL_CONTEXT.ISSUE_STATUS,
+          transactionId: issue.transaction_id,
+          bppId: issue.bppId,
+          bpp_uri: issue.bpp_uri,
+          cityCode: issue.order_details?.city,
+        });
+        console.log("🚀 ~ startIssueStatusCron ~ contextFactory:");
 
-      // Step 3: Construct payload
-      const issueStatusRequest = {
-        context,
-        message: {
-          issue_id: issue.issueId,
-        },
-      };
+        // Step 3: Construct payload
+        const issueStatusRequest = {
+          context,
+          message: {
+            issue_id: issue.issueId,
+          },
+        };
 
-      // Introduce delay of 5 seconds
-      await delay(5000); // 5000 milliseconds = 5 seconds
+        // Introduce delay of 5 seconds
+        await delay(5000); // 5000 milliseconds = 5 seconds
 
-      // Step 4: Hit the protocol to get issue status
-      const response = await protocolIssueStatus(issueStatusRequest);
-      logger.info(
-        `✅ Issue status issueStatusRequest for ${JSON.stringify(
-          issueStatusRequest
-        )}:`,
-        JSON.stringify(response)
-      );
-      logger.info(
-        `✅ Issue status response for ${issue.issueId}:`,
-        JSON.stringify(response)
-      );
+        // Step 4: Hit the protocol to get issue status
+        const response = await protocolIssueStatus(issueStatusRequest);
+        logger.info(
+          `✅ Issue status issueStatusRequest for ${JSON.stringify(
+            issueStatusRequest
+          )}:`,
+          JSON.stringify(response)
+        );
+        logger.info(
+          `✅ Issue status response for ${issue.issueId}:`,
+          JSON.stringify(response)
+        );
+      } catch (error) {
+        // Handle individual issue request failures here
+        logger.error(
+          `❌ Error in issue status request for issue ${issue.issueId}:`,
+          error
+        );
+      }
     }
   } catch (error) {
     logger.error("❌ Error in issue status execution at startup:", error);
