@@ -10,6 +10,7 @@ const addOrUpdateIssueWithtransactionId = async (
   // issueid: string | any,
   issueSchema: Record<any, any> = {}
 ) => {
+  console.log("🚀 ~ issueSchema:", issueSchema)
   return await IssueModel.findOneAndUpdate(
     {
       transaction_id: transactionId,
@@ -21,17 +22,16 @@ const addOrUpdateIssueWithtransactionId = async (
     { upsert: true }
   );
 };
+console.log("🚀 DBservices ~ addOrUpdateIssueWithtransactionId:", addOrUpdateIssueWithtransactionId)
 // const addOrUpdateIssueWithIssueId = async (
-//   transactionId: string | any,
-//   subcategory: string | any,
 //   issueid: string | any,
+//   respondent_actions: string | any,
 //   issueSchema: Record<any, any> = {}
 // ) => {
 //   return await IssueModel.findOneAndUpdate(
 //     {
-//       transaction_id: transactionId,
-//       sub_category: subcategory,
 //       issueId: issueid,
+//       respondentActions : respondent_actions
 //     },
 //     {
 //       ...issueSchema,

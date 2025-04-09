@@ -1,3 +1,5 @@
+// import { IssueActions } from './../../interfaces/bpp_issue';
+import { , RespondentActions,  } from './../../interfaces/issue';
 import { onIssue_status } from "../../utils/protocolApis";
 import {logger} from "../../shared/logger"
 import Issue from "../../database/issue.model";
@@ -9,7 +11,7 @@ import {
   getIssueByTransactionId,
   // addOrUpdateIssueWithIssueId
 } from "../../utils/dbservice";
-import { IssueProps, RespondentActions } from "../../interfaces/issue";
+import { IssueProps } from "../../interfaces/issue";
 import BugzillaService from "../../controller/bugzilla/bugzilla.service";
 
 const bppIssueStatusService = new BppIssueStatusService();
@@ -103,11 +105,10 @@ class IssueStatusService {
           protocolSupportResponse?.[0]?.context?.transaction_id,
           issue
         );
+        console.log("🚀 ~ IssueStatusService ~ onIssueStatus ~ addOrUpdateIssueWithtransactionId:", addOrUpdateIssueWithtransactionId)
         // await addOrUpdateIssueWithIssueId(
-        //   protocolSupportResponse?.[0]?.context?.transaction_id,
-        //   protocolSupportResponse?.[0]?.message?.issue?.sub_category,
+        //   protocolSupportResponse?.[0]?.IssueActions.respondent_actions,
         //   protocolSupportResponse?.[0]?.context?.issueId,
-
         //   issue
         // )
 
