@@ -7,7 +7,6 @@ import { PROTOCOL_CONTEXT } from "../../shared/constants";
 import ExcelJS from "exceljs";
 import Issue from "../../database/issue.model";
 const issueService = new IssueService();
-import cron from "node-cron";
 class IssueController {
   /**
    * create issue
