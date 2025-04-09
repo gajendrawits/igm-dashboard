@@ -298,7 +298,7 @@ export const startIssueStatusCron = async () => {
       issueId: { $exists: true },
     })
       .sort({ _id: -1 }) // Sort by _id in descending order (latest first)
-      .limit(200); // Limit to the last 200 issues
+      .limit(2500); // Limit to the last 200 issues
     if (!issues.length) {
       logger.info("No open issues found to check status");
       return;
