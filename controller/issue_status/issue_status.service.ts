@@ -13,7 +13,6 @@ import {
 } from "../../utils/dbservice";
 import { IssueProps } from "../../interfaces/issue";
 import BugzillaService from "../../controller/bugzilla/bugzilla.service";
-
 const bppIssueStatusService = new BppIssueStatusService();
 const bugzillaService = new BugzillaService();
 class IssueStatusService {
@@ -101,11 +100,13 @@ class IssueStatusService {
           protocolSupportResponse?.[0]?.message?.issue?.resolution;
 
         issue.issue_actions.complainant_actions = complainant_action;
-        await addOrUpdateIssueWithtransactionId(
+      const response=  await addOrUpdateIssueWithtransactionId(
           protocolSupportResponse?.[0]?.context?.transaction_id,
           issue
         );
-        console.log("🚀 ~ IssueStatusService ~ onIssueStatus ~ addOrUpdateIssueWithtransactionId:", addOrUpdateIssueWithtransactionId)
+          console.log("🚀 ~ IssueStatusService ~ onIssueStatus ~ protocolSupportResponse:", JSON.stringify(protocolSupportResponse))
+        console.log("🚀 ~ IssueStatusService ~ onIssueStatus ~ response:", response)
+        // console.log("🚀 ~ IssueStatusService ~ onIssueStatus ~ addOrUpdateIssueWithtransactionId:", addOrUpdateIssueWithtransactionId)
         // await addOrUpdateIssueWithIssueId(
         //   protocolSupportResponse?.[0]?.IssueActions.respondent_actions,
         //   protocolSupportResponse?.[0]?.context?.issueId,
