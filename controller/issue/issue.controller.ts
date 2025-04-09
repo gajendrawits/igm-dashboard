@@ -328,6 +328,10 @@ export const startIssueStatusCron = async () => {
       // Step 4: Hit the protocol to get issue status
       const response = await protocolIssueStatus(issueStatusRequest);
       logger.info(
+        `✅ Issue status issueStatusRequest for ${issueStatusRequest}:`,
+        JSON.stringify(response)
+      );
+      logger.info(
         `✅ Issue status response for ${issue.issueId}:`,
         JSON.stringify(response)
       );
