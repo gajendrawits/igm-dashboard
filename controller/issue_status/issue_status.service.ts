@@ -1,7 +1,7 @@
 // import { IssueActions } from './../../interfaces/bpp_issue';
-import {  RespondentActions,  } from './../../interfaces/issue';
+// import { RespondentActions } from "./../../interfaces/issue";
 import { onIssue_status } from "../../utils/protocolApis";
-import {logger} from "../../shared/logger"
+import { logger } from "../../shared/logger";
 import Issue from "../../database/issue.model";
 import { PROTOCOL_CONTEXT } from "../../shared/constants";
 import ContextFactory from "../../utils/contextFactory";
@@ -20,8 +20,10 @@ class IssueStatusService {
     const issue: any = await Issue.find({
       issueId: issueId,
     });
-  
-    logger.info(`verifying issue id from db in issue_status service ${issueId}`)
+
+    logger.info(
+      `verifying issue id from db in issue_status service ${issueId}`
+    );
 
     if (!(issue || issue.length))
       return {
@@ -39,13 +41,15 @@ class IssueStatusService {
   async issue_status(order: any) {
     try {
       const { context: requestContext, message } = order;
-     
-      logger.info(message?.issue_id)
-      
-      logger.info(`${message}, message from issue_status: issue_status.service`)
+
+      logger.info(message?.issue_id);
+
+      logger.info(
+        `${message}, message from issue_status: issue_status.service`
+      );
 
       const issueDetails = await this.getIssueByIssueId(message?.issue_id);
-      logger.info(`issueDetails in issue_status.services`)
+      logger.info(`issueDetails in issue_status.services`);
 
       const contextFactory = new ContextFactory();
       const context = contextFactory.create({
@@ -69,8 +73,7 @@ class IssueStatusService {
    */
   async onIssueStatus(messageId: Object) {
     try {
-
-      logger.info(`messageId in issue_status.service, ${messageId}`)
+      logger.info(`messageId in issue_status.service, ${messageId}`);
       const protocolSupportResponse = await onIssue_status(messageId);
       if (protocolSupportResponse && protocolSupportResponse.length) {
         const respondent_actions =
@@ -82,18 +85,21 @@ class IssueStatusService {
         );
 
         const complainant_action = issue.issue_actions.complainant_actions;
-        respondent_actions?.foreach((item: RespondentActions) => {
-          if (item?.respondent_action === "RESOLVED") {
-            bugzillaService.updateIssueInBugzilla(
-              protocolSupportResponse?.[0]?.context?.transaction_id,
-              issue?.issue_actions,
-              true
-            );
-          }
-        });
+        // respondent_actions?.foreach((item: RespondentActions) => {
+        //   if (item?.respondent_action === "RESOLVED") {
+        //     bugzillaService.updateIssueInBugzilla(
+        //       protocolSupportResponse?.[0]?.context?.transaction_id,
+        //       issue?.issue_actions,
+        //       true
+        //     );
+        //   }
+        // });
 
         issue.issue_actions.respondent_actions = respondent_actions;
-        console.log("🚀 ~ IssueStatusService ~ onIssueStatus ~ respondent_actions:", respondent_actions)
+        console.log(
+          "🚀 ~ IssueStatusService  onIssueStatus respondent_actions_response:",
+          respondent_actions
+        );
 
         issue["resolution_provider"] =
           protocolSupportResponse?.[0]?.message?.issue?.resolution_provider;
@@ -101,12 +107,18 @@ class IssueStatusService {
           protocolSupportResponse?.[0]?.message?.issue?.resolution;
 
         issue.issue_actions.complainant_actions = complainant_action;
-      const response=  await addOrUpdateIssueWithtransactionId(
+        const response = await addOrUpdateIssueWithtransactionId(
           protocolSupportResponse?.[0]?.context?.transaction_id,
           issue
         );
-          console.log("🚀 ~ IssueStatusService ~ onIssueStatus ~ protocolSupportResponse:", JSON.stringify(protocolSupportResponse))
-        console.log("🚀 ~ IssueStatusService ~ onIssueStatus ~ response:", response)
+        console.log(
+          "🚀 ~ IssueStatusService ~ onIssueStatus ~ protocolSupportResponse:",
+          JSON.stringify(protocolSupportResponse)
+        );
+        console.log(
+          "🚀 ~ IssueStatusService ~ onIssueStatus ~ response:",
+          response
+        );
         // console.log("🚀 ~ IssueStatusService ~ onIssueStatus ~ addOrUpdateIssueWithtransactionId:", addOrUpdateIssueWithtransactionId)
         // await addOrUpdateIssueWithIssueId(
         //   protocolSupportResponse?.[0]?.IssueActions.respondent_actions,
