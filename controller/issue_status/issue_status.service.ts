@@ -97,7 +97,7 @@ class IssueStatusService {
 
         issue.issue_actions.respondent_actions = respondent_actions;
         console.log(
-          "🚀 ~ IssueStatusService  onIssueStatus respondent_actions_response:",
+          "🚀 ~ IssueStatusService  onIssueStatus respondent_actions_response_:",
           respondent_actions
         );
 
