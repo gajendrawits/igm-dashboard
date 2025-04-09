@@ -116,8 +116,8 @@ class IssueStatusService {
           JSON.stringify(protocolSupportResponse)
         );
         console.log(
-          "🚀 ~ IssueStatusService ~ onIssueStatus ~ response:",
-          response
+          "🚀 ~ IssueStatusService - onIssueStatus - responseSave:",
+          JSON.stringify(response)
         );
         // console.log("🚀 ~ IssueStatusService ~ onIssueStatus ~ addOrUpdateIssueWithtransactionId:", addOrUpdateIssueWithtransactionId)
         // await addOrUpdateIssueWithIssueId(
