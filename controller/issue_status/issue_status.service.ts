@@ -98,7 +98,7 @@ class IssueStatusService {
         issue.issue_actions.respondent_actions = respondent_actions;
         console.log(
           "🚀 ~ IssueStatusService  onIssueStatus respondent_actions_response_:",
-          respondent_actions
+          JSON.stringify(respondent_actions)
         );
 
         issue["resolution_provider"] =
@@ -107,12 +107,13 @@ class IssueStatusService {
           protocolSupportResponse?.[0]?.message?.issue?.resolution;
 
         issue.issue_actions.complainant_actions = complainant_action;
+        issue.updated_at = new Date();
         const response = await addOrUpdateIssueWithtransactionId(
           protocolSupportResponse?.[0]?.context?.transaction_id,
           issue
         );
         console.log(
-          "🚀 ~ IssueStatusService ~ onIssueStatus ~ protocolSupportResponse:",
+          "🚀 ~ IssueStatusService - onIssueStatus - protocolSupportResponse:",
           JSON.stringify(protocolSupportResponse)
         );
         console.log(
