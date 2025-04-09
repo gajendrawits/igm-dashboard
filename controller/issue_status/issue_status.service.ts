@@ -82,7 +82,7 @@ class IssueStatusService {
         );
 
         const complainant_action = issue.issue_actions.complainant_actions;
-        respondent_actions?.map((item: RespondentActions) => {
+        respondent_actions?.foreach((item: RespondentActions) => {
           if (item?.respondent_action === "RESOLVED") {
             bugzillaService.updateIssueInBugzilla(
               protocolSupportResponse?.[0]?.context?.transaction_id,
@@ -93,6 +93,7 @@ class IssueStatusService {
         });
 
         issue.issue_actions.respondent_actions = respondent_actions;
+        console.log("🚀 ~ IssueStatusService ~ onIssueStatus ~ respondent_actions:", respondent_actions)
 
         issue["resolution_provider"] =
           protocolSupportResponse?.[0]?.message?.issue?.resolution_provider;
