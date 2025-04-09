@@ -290,57 +290,55 @@ class IssueController {
 
 //  Validate and safely assign env vars
 
-export const startIssueStatusCron = () => {
-  cron.schedule("*/1 * * * * *", async () => {
-    try {
-      // Step 1: Fetch issues from DB where issue_status is 'Open' and issueId exists
-      const issues = await Issue.find({
-        issue_status: "Open",
-        issueId: { $exists: true },
-      })
-        .sort({ _id: -1 }) // Sort by _id in descending order (latest first)
-        .limit(10); // Limit to the last 200 issues
-      if (!issues.length) {
-        logger.info("No open issues found to check status");
-        return;
-      }
-
-      for (const issue of issues) {
-        // Step 2: Construct context for each issue
-        const contextFactory = new ContextFactory();
-        const context = contextFactory.create({
-          domain: issue.domain,
-          action: PROTOCOL_CONTEXT.ISSUE_STATUS,
-          transactionId: issue.transaction_id,
-          bppId: issue.bppId,
-          bpp_uri: issue.bpp_uri,
-          cityCode: issue.order_details?.city,
-        });
-        console.log("🚀 ~ startIssueStatusCron ~ contextFactory:");
-
-        // Step 3: Construct payload
-        const issueStatusRequest = {
-          context,
-          message: {
-            issue_id: issue.issueId,
-          },
-        };
-
-        // Step 4: Hit the protocol to get issue status
-        const response = await protocolIssueStatus(issueStatusRequest);
-        logger.info(
-          `✅ Issue status issueStatusRequest for ${issueStatusRequest}:`,
-          JSON.stringify(response)
-        );
-        logger.info(
-          `✅ Issue status response for ${issue.issueId}:`,
-          JSON.stringify(response)
-        );
-      }
-    } catch (error) {
-      logger.error("❌ Error in issue status execution at startup:", error);
+export const startIssueStatusCron = async () => {
+  try {
+    // Step 1: Fetch issues from DB where issue_status is 'Open' and issueId exists
+    const issues = await Issue.find({
+      issue_status: "Open",
+      issueId: { $exists: true },
+    })
+      .sort({ _id: -1 }) // Sort by _id in descending order (latest first)
+      .limit(10); // Limit to the last 200 issues
+    if (!issues.length) {
+      logger.info("No open issues found to check status");
+      return;
     }
-  });
+
+    for (const issue of issues) {
+      // Step 2: Construct context for each issue
+      const contextFactory = new ContextFactory();
+      const context = contextFactory.create({
+        domain: issue.domain,
+        action: PROTOCOL_CONTEXT.ISSUE_STATUS,
+        transactionId: issue.transaction_id,
+        bppId: issue.bppId,
+        bpp_uri: issue.bpp_uri,
+        cityCode: issue.order_details?.city,
+      });
+      console.log("🚀 ~ startIssueStatusCron ~ contextFactory:");
+
+      // Step 3: Construct payload
+      const issueStatusRequest = {
+        context,
+        message: {
+          issue_id: issue.issueId,
+        },
+      };
+
+      // Step 4: Hit the protocol to get issue status
+      const response = await protocolIssueStatus(issueStatusRequest);
+      logger.info(
+        `✅ Issue status issueStatusRequest for ${issueStatusRequest}:`,
+        JSON.stringify(response)
+      );
+      logger.info(
+        `✅ Issue status response for ${issue.issueId}:`,
+        JSON.stringify(response)
+      );
+    }
+  } catch (error) {
+    logger.error("❌ Error in issue status execution at startup:", error);
+  }
 };
 
 // Run once on server start
