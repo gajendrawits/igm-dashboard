@@ -1,5 +1,5 @@
 // import { IssueActions } from './../../interfaces/bpp_issue';
-import { , RespondentActions,  } from './../../interfaces/issue';
+import {  RespondentActions,  } from './../../interfaces/issue';
 import { onIssue_status } from "../../utils/protocolApis";
 import {logger} from "../../shared/logger"
 import Issue from "../../database/issue.model";
