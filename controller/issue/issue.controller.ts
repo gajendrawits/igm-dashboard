@@ -289,7 +289,9 @@ class IssueController {
 
 //  Validate and safely assign env vars
 
-export const startIssueStatusCron = async () => {
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const startIssueStatusCron = async () => {
   try {
     // Step 1: Fetch issues from DB where issue_status is 'Open' and issueId exists
     const issues = await Issue.find({
@@ -297,7 +299,8 @@ export const startIssueStatusCron = async () => {
       issueId: { $exists: true },
     })
       .sort({ _id: -1 }) // Sort by _id in descending order (latest first)
-      .limit(1000); // Limit to the last 200 issues
+      .limit(500);
+
     if (!issues.length) {
       logger.info("No open issues found to check status");
       return;
@@ -323,6 +326,9 @@ export const startIssueStatusCron = async () => {
           issue_id: issue.issueId,
         },
       };
+
+      // Introduce delay of 5 seconds
+      await delay(5000); // 5000 milliseconds = 5 seconds
 
       // Step 4: Hit the protocol to get issue status
       const response = await protocolIssueStatus(issueStatusRequest);
