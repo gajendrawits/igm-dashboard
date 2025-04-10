@@ -106,8 +106,8 @@ class IssueController {
       pageNumber: pageNumber,
     });
 
-    // logger.info(`getAllIssuesList response ${JSON.stringify(response)}`);
-    // logger.info(`getAllIssuesList response ${response}`);
+    logger.info(`getAllIssuesList response ${JSON.stringify(response)}`);
+    logger.info(`getAllIssuesList response ${response}`);
 
     return response        
   }

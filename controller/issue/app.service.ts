@@ -545,7 +545,7 @@ class IssueService {
       const issues = await Issue.find().limit(limit).skip(skip);
 
       const totalCount = await Issue.countDocuments();
-      // logger.info(`getAllIssuesList countDocuments ${JSON.stringify(issues)}`);
+      logger.info(`getAllIssuesList countDocuments ${JSON.stringify(issues)}`);
       if (!issues.length) {
         return {
           error: {

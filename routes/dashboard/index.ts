@@ -16,28 +16,30 @@ router.get("/", checkSession, (_req, res) => {
   });
 });
 
-router.get("/issue-open", async (_req, res, _next) => {
-  // const products = require("../../data/products.json");
-  const response = await issueController.getAllIssuesList(_req);
+router.get("/issue-open", async (req, res) => {
+  const response = await issueController.getAllIssuesList(req);
   const issues = JSON.stringify(response)
-  console.log(`============== got issues ${JSON.stringify(issues)}================`);
   
   res.render("crud/products", {
     layout: "../layouts/dashboard",
     footer: false,
     issues,
+    issueType: "open",
   });
 });
 
-router.get("/issue-closed", (_req, res) => {
-  const products = require("../../data/products.json");
+router.get("/issue-closed", async (req, res) => {
+  const response = await issueController.getAllIssuesList(req);
+  const issues = JSON.stringify(response)
 
   res.render("crud/products", {
     layout: "../layouts/dashboard",
     footer: false,
-    products,
+    issues,
+    issueType: "close",
   });
 });
+
 router.get("/issue-all", (_req, res) => {
   const products = require("./data/products.json");
   res.render("crud/products", {
