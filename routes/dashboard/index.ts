@@ -18,25 +18,33 @@ router.get("/", checkSession, (_req, res) => {
 
 router.get("/issue-open", async (req, res) => {
   const response = await issueController.getAllIssuesList(req);
-  const issues = JSON.stringify(response)
-  
+  const issues = JSON.stringify(response);
+  const totalCount = response.totalCount;
+
   res.render("crud/products", {
     layout: "../layouts/dashboard",
     footer: false,
     issues,
+    totalCount,
     issueType: "open",
+    currentPage: req.query.pageNumber || 1,
+    limit: req.query.limit || 10,
   });
 });
 
 router.get("/issue-closed", async (req, res) => {
   const response = await issueController.getAllIssuesList(req);
-  const issues = JSON.stringify(response)
+  const issues = JSON.stringify(response);
+  const totalCount = response.totalCount;
 
   res.render("crud/products", {
     layout: "../layouts/dashboard",
     footer: false,
     issues,
+    totalCount,
     issueType: "close",
+    currentPage: req.query.pageNumber || 1,
+    limit: req.query.limit || 10,
   });
 });
 
