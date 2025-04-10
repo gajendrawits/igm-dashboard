@@ -36,6 +36,7 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true
   },
+  "typeRoots": ["./types", "./node_modules/@types"],
   "include": ["."],
   "exclude": ["tests"]
 }

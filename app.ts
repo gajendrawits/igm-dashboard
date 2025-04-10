@@ -4,12 +4,18 @@ import cors from "cors";
 // import loadEnvVariables from "./utils/envHelper";
 import issueRoutes from "./routes/issue";
 import issue_statusRoutes from "./routes/issue_status";
+import authRoutes from "./routes/auth";
+import dashboardRoutes from "./routes/dashboard";
 import sseRoutes from "./routes/sse";
 import dotenv from "dotenv";
+import path from "path";
+import expressLayouts from "express-ejs-layouts";
+import session from "express-session";
+import checkSession from "./middleware/dashboard";
 
 const createServer = (): express.Application => {
   const app: Application = express();
-  dotenv.config()
+  dotenv.config();
 
   // initialize environment variables
   // loadEnvVariables();
@@ -18,7 +24,31 @@ const createServer = (): express.Application => {
   app.use(bodyParser.json());
   app.use(express.urlencoded({ extended: true, limit: "50mb" }));
   app.use(cors());
+  app.use(express.static(path.join(__dirname, "/static")));
+  // Static Files
+  app.use(express.static(path.join(__dirname, "/static")));
+  app.use(
+    session({
+      secret: "your-secret-key", // Change this to a secure, unique key
+      resave: false,
+      saveUninitialized: false,
+      cookie: { secure: false }, // Set to true if using HTTPS
+    })
+  );
+  // Set Templating Engine
+  app
+    .use(expressLayouts)
+    .set("view engine", "ejs")
+    .set("views", path.join(__dirname, "/content"));
 
+  app.get("/", checkSession, (_req, res) => {
+    res.render("index", {
+      layout: path.join(__dirname, "/layouts/dashboard"),
+      footer: true,
+    });
+  });
+  app.use("/auth", authRoutes);
+  app.use("/dashboard", dashboardRoutes);
   //Routes
   app.use("/issueApis", issueRoutes);
   app.use("/issueApis", issue_statusRoutes);
