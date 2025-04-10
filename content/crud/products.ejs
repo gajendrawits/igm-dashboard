@@ -19,18 +19,18 @@ group: crud
                   <li>
                     <div class="flex items-center">
                       <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                      <a href="#" class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2 dark:text-gray-300 dark:hover:text-white">E-commerce</a>
+                      <a href="#" class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2 dark:text-gray-300 dark:hover:text-white">Issues</a>
                     </div>
                   </li>
                   <li>
                     <div class="flex items-center">
                       <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                      <span class="ml-1 text-gray-400 md:ml-2 dark:text-gray-500" aria-current="page">Products</span>
+                      <span class="ml-1 text-gray-400 md:ml-2 dark:text-gray-500" aria-current="page">Open</span>
                     </div>
                   </li>
                 </ol>
             </nav>
-            <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">All products</h1>
+            <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">All Open Issues</h1>
         </div>
         <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
             <div class="flex items-center mb-4 sm:mb-0">
@@ -58,7 +58,7 @@ group: crud
                 </div>
             </div>
             <button id="createProductButton" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800" type="button" data-drawer-target="drawer-create-product-default" data-drawer-show="drawer-create-product-default" aria-controls="drawer-create-product-default" data-drawer-placement="right">
-                Add new product
+                Add new issue
             </button>
         </div>
     </div>
@@ -77,22 +77,22 @@ group: crud
                                 </div>
                             </th>
                             <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                                Product Name
+                                Bpp Id
                             </th>
                             <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                                Technology
+                                Category
                             </th>
                             <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                                Description
+                                Domain
                             </th>
                             <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                                ID
+                                Issue ID
                             </th>
                             <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                                Price
+                                Sub Category
                             </th>
                             <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-                                Discount
+                                Issue Status
                             </th>
                             <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
                                 Actions
@@ -100,26 +100,30 @@ group: crud
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                        <% for (let i = 0; i < products.length; i++) { %>
-                            <% const product = products[i]; %>
+                        <% const response = JSON.parse(issues) %>
+                        <% console.log(response) %>
+                        <% const issuesArray = response.issues %>
+                        <% console.log(issuesArray) %>
+                        <% for (let i = 0; i < issuesArray.length; i++) { %>
+                            <% const issue = issuesArray[i]; %>
 
                         <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
                             <td class="w-4 p-4">
                                 <div class="flex items-center">
-                                    <input id="checkbox-<%= product.id %>" aria-describedby="checkbox-1" type="checkbox"
+                                    <input id="checkbox-<%= issue._id %>" aria-describedby="checkbox-1" type="checkbox"
                                         class="w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="checkbox-<%= product.id %>" class="sr-only">checkbox</label>
+                                    <label for="checkbox-<%= issue._id %>" class="sr-only">checkbox</label>
                                 </div>
                             </td>
                             <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                <div class="text-base font-semibold text-gray-900 dark:text-white"><%= product.name %></div>
-                                <div class="text-sm font-normal text-gray-500 dark:text-gray-400"><%= product.category %></div>
+                                <div class="text-base font-semibold text-gray-900 dark:text-white"><%= issue.bppId %></div>
+                                <!-- <div class="text-sm font-normal text-gray-500 dark:text-gray-400"><%= issue.category %></div> -->
                             </td>
-                            <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= product.technology %></td>
-                            <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"><%= product.description %></td>
-                            <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">#<%= product.id %></td>
-                            <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= product.price %></td>
-                            <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= product.discount %></td>
+                            <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= issue.category %></td>
+                            <td class="max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400"><%= issue.domain %></td>
+                            <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">#<%= issue.issueId %></td>
+                            <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= issue.sub_category %></td>
+                            <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= issue.issue_status %></td>
 
                             <td class="p-4 space-x-2 whitespace-nowrap">
                                 <button type="button" id="updateProductButton" data-drawer-target="drawer-update-product-default" data-drawer-show="drawer-update-product-default" aria-controls="drawer-update-product-default" data-drawer-placement="right" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">

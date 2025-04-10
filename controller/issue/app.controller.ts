@@ -1,5 +1,5 @@
 import { Response, NextFunction, Request } from "express";
-import IssueService from "./issue.service";
+import IssueService from "./app.service";
 import { logger } from "../../shared/logger";
 // import { protocolIssueStatus } from "../../utils/protocolApis";
 // import ContextFactory from "../../utils/contextFactory";
@@ -93,27 +93,7 @@ class IssueController {
           });
   }
 
-  /**
-   * on issue
-   * @param {*} req    HTTP request object
-   * @param {*} res    HTTP response object
-   * @param {*} next   Callback argument to the middleware function
-   */
-  onIssue(req: any, res: Response, next: NextFunction) {
-    const { query } = req;
-    const { messageId } = query;
-
-    issueService
-      .onIssueOrder(messageId)
-      .then((issue: any) => {
-        res.json(issue);
-      })
-      .catch((err: any) => {
-        next(err);
-      });
-  }
-
-  async getAllIssuesList(req: Request, res: Response, _next: NextFunction) {
+  async getAllIssuesList(req: Request) {
     const limit = parseInt(req.query.limit as string, 10) || 10;
     const pageNumber = parseInt(req.query.pageNumber as string, 10) || 1;
 
@@ -126,12 +106,10 @@ class IssueController {
       pageNumber: pageNumber,
     });
 
-    logger.info(`getAllIssuesList response ${JSON.stringify(response)}`);
-    logger.info(`getAllIssuesList response ${response}`);
+    // logger.info(`getAllIssuesList response ${JSON.stringify(response)}`);
+    // logger.info(`getAllIssuesList response ${response}`);
 
-    return res.status(200).send({
-      data: response,
-    });
+    return response        
   }
   // /**
   //  * All Issue Excel
@@ -356,6 +334,6 @@ class IssueController {
 //   }
 // };
 
-// Run once on server start
+// // Run once on server start
 // startIssueStatusCron();
 export default IssueController;

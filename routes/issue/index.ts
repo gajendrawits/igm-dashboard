@@ -19,7 +19,10 @@ router.post(
 router.get("/v1/issue", authentication(), issueController.getIssue);
 router.get("/v1/on_issue", authentication(), issueController.onIssue);
 router.get("/v1/getIssues", authentication(), issueController.getIssuesList);
-router.get("/v1/allIssues", authentication(), issueController.getAllIssuesList);
+router.get(
+  "/v1/allIssues", 
+  // authentication(),
+   issueController.getAllIssuesList);
 router.get("/v1/download", validateApiKey, issueController.getAllIssuesExcel);
 
 export default router;

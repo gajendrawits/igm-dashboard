@@ -1,10 +1,13 @@
 import express from "express";
 import checkSession from "../../middleware/dashboard";
+import IssueController from "../../controller/issue/app.controller";
 // import path from "path";
 
 const router = express.Router();
 
-// POST route for user login
+const issueController= new IssueController()
+
+// POST route for user loginß
 
 router.get("/", checkSession, (_req, res) => {
   res.render("index", {
@@ -13,12 +16,16 @@ router.get("/", checkSession, (_req, res) => {
   });
 });
 
-router.get("/issue-open", (_req, res) => {
-  const products = require("../../data/products.json");
+router.get("/issue-open", async (_req, res, _next) => {
+  // const products = require("../../data/products.json");
+  const response = await issueController.getAllIssuesList(_req);
+  const issues = JSON.stringify(response)
+  console.log(`============== got issues ${JSON.stringify(issues)}================`);
+  
   res.render("crud/products", {
     layout: "../layouts/dashboard",
     footer: false,
-    products,
+    issues,
   });
 });
 
