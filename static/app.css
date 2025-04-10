@@ -1216,9 +1216,6 @@ input:checked + .toggle-bg {
 .mt-0 {
   margin-top: 0px;
 }
-.mt-0\.5 {
-  margin-top: 0.125rem;
-}
 .mt-1 {
   margin-top: 0.25rem;
 }
@@ -1291,9 +1288,6 @@ input:checked + .toggle-bg {
 .h-3 {
   height: 0.75rem;
 }
-.h-3\.5 {
-  height: 0.875rem;
-}
 .h-32 {
   height: 8rem;
 }
@@ -1350,9 +1344,6 @@ input:checked + .toggle-bg {
 }
 .w-3 {
   width: 0.75rem;
-}
-.w-3\.5 {
-  width: 0.875rem;
 }
 .w-36 {
   width: 9rem;
