@@ -7,8 +7,6 @@ const router = express.Router();
 
 const issueController= new IssueController()
 
-// POST route for user loginß
-
 router.get("/", checkSession, (_req, res) => {
   res.render("index", {
     layout: "../layouts/dashboard",
@@ -17,7 +15,7 @@ router.get("/", checkSession, (_req, res) => {
 });
 
 router.get("/issue-open", async (req, res) => {
-  const response = await issueController.getAllIssuesList(req);
+  const response = await issueController.getAllIssuesList(req, 'open');
   const issues = JSON.stringify(response);
   const totalCount = response.totalCount;
 
@@ -28,12 +26,12 @@ router.get("/issue-open", async (req, res) => {
     totalCount,
     issueType: "open",
     currentPage: req.query.pageNumber || 1,
-    limit: req.query.limit || 10,
+    limit: req.query.limit || 7,
   });
 });
 
 router.get("/issue-closed", async (req, res) => {
-  const response = await issueController.getAllIssuesList(req);
+  const response = await issueController.getAllIssuesList(req, 'close');
   const issues = JSON.stringify(response);
   const totalCount = response.totalCount;
 
@@ -44,7 +42,7 @@ router.get("/issue-closed", async (req, res) => {
     totalCount,
     issueType: "close",
     currentPage: req.query.pageNumber || 1,
-    limit: req.query.limit || 10,
+    limit: req.query.limit || 7,
   });
 });
 

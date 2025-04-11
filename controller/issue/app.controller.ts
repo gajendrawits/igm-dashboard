@@ -93,8 +93,8 @@ class IssueController {
           });
   }
 
-  async getAllIssuesList(req: Request) {
-    const limit = parseInt(req.query.limit as string, 10) || 10;
+  async getAllIssuesList(req: Request, issueStatus?: string) {
+    const limit = parseInt(req.query.limit as string, 10) || 7;
     const pageNumber = parseInt(req.query.pageNumber as string, 10) || 1;
 
     logger.info(
@@ -104,13 +104,13 @@ class IssueController {
     const response: any = await issueService.getAllIssuesList({
       limit: limit,
       pageNumber: pageNumber,
-    });
+    }, issueStatus);
 
     logger.info(`getAllIssuesList response ${JSON.stringify(response)}`);
     logger.info(`getAllIssuesList response ${response}`);
 
-    return response        
-  }
+    return response;        
+}
   // /**
   //  * All Issue Excel
   //  * @param {*} req    HTTP request object

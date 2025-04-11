@@ -536,15 +536,21 @@ class IssueService {
     }
   }
 
-  async getAllIssuesList(params: IParamProps) {
+  async getAllIssuesList(params: IParamProps, issueStatus?: string) {
     try {
-      let { limit = 10, pageNumber = 1 } = params;
+      let { limit = 7, pageNumber = 1 } = params;
 
       let skip = (pageNumber - 1) * limit;
       logger.info(`getAllIssuesList service skip: ${skip} pageNumber: ${pageNumber}`);
-      const issues = await Issue.find().limit(limit).skip(skip);
+      
+      const filter: any = {};
+      if (issueStatus) {
+        filter.issue_status = new RegExp(issueStatus, 'i');
+      }
 
-      const totalCount = await Issue.countDocuments();
+      const issues = await Issue.find(filter).limit(limit).skip(skip);
+      const totalCount = await Issue.countDocuments(filter);
+      
       logger.info(`getAllIssuesList countDocuments ${JSON.stringify(issues)}`);
       if (!issues.length) {
         return {
