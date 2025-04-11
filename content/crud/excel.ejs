@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Export to Excel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
+  <style>
+    body {
+      background-color: #111827;
+    }
+    input:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+    }
+
+    /* Full dark theme for Flatpickr */
+    .flatpickr-calendar {
+      background-color: #1f2937 !important;
+      border: 1px solid #374151;
+      color: #f9fafb;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .flatpickr-months,
+    .flatpickr-weekdays {
+      background-color: #1f2937 !important;
+      color: #e5e7eb;
+    }
+
+    .flatpickr-weekday {
+      color: #9ca3af;
+    }
+
+    .flatpickr-monthDropdown-months,
+    .flatpickr-current-month input.cur-year {
+      background-color: #1f2937;
+      color: #f3f4f6;
+      border: 1px solid #4b5563;
+    }
+
+    .flatpickr-monthDropdown-month {
+      background-color: #1f2937 !important;
+      color: #f9fafb !important;
+    }
+
+    .flatpickr-day {
+      color: #d1d5db;
+      border-radius: 6px;
+    }
+
+    .flatpickr-day:hover {
+      background-color: #4f46e5;
+      color: white;
+    }
+
+    .flatpickr-day.today {
+      border: 1px solid #6366f1;
+    }
+
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange {
+      background-color: #6366f1 !important;
+      color: white !important;
+    }
+
+    .flatpickr-prev-month,
+    .flatpickr-next-month {
+      color: #f3f4f6;
+    }
+
+    .flatpickr-prev-month:hover svg,
+    .flatpickr-next-month:hover svg {
+      fill: #818cf8;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen text-white">
+
+  <div class="bg-gray-800 p-10 rounded-2xl shadow-2xl w-full max-w-xl">
+    <h2 class="text-3xl font-bold text-center text-white mb-8">📊 Export Transactions</h2>
+
+    <form id="exportForm" class="space-y-6">
+      <div>
+        <label for="fromDate" class="block text-sm font-medium text-gray-300 mb-1">From Date</label>
+        <input type="text" id="fromDate" name="fromDate" required
+          class="w-full border border-gray-600 bg-gray-900 text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500"
+          placeholder="Select start date" />
+      </div>
+
+      <div>
+        <label for="toDate" class="block text-sm font-medium text-gray-300 mb-1">To Date</label>
+        <input type="text" id="toDate" name="toDate" required
+          class="w-full border border-gray-600 bg-gray-900 text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500"
+          placeholder="Select end date" />
+      </div>
+
+      <div class="text-center pt-4">
+        <button type="submit"
+          class="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg w-full shadow-md transition duration-300">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h4a1 1 0 110 2H5v12h10V4h-3a1 1 0 110-2h4a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V3z" clip-rule="evenodd" />
+            <path d="M9 7a1 1 0 012 0v4h1.586a1 1 0 01.707 1.707l-3.586 3.586a1 1 0 01-1.414 0L5.707 12.707A1 1 0 016.414 11H8V7z" />
+          </svg>
+          Export Excel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    flatpickr("#fromDate", {
+      dateFormat: "Y-m-d",
+      maxDate: "today",
+      disableMobile: true
+    });
+
+    flatpickr("#toDate", {
+      dateFormat: "Y-m-d",
+      maxDate: "today",
+      disableMobile: true
+    });
+
+    document.getElementById('exportForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const fromDate = document.getElementById('fromDate').value;
+      const toDate = document.getElementById('toDate').value;
+
+      if (fromDate && toDate) {
+        const url = `/issueApis/v1/download?from=${encodeURIComponent(fromDate)}&to=${encodeURIComponent(toDate)}`;
+        window.location.href = url;
+      } else {
+        alert("Please select both dates!");
+      }
+    });
+  </script>
+
+</body>
+</html>

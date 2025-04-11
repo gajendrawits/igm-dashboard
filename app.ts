@@ -40,6 +40,7 @@ const createServer = (): express.Application => {
     .use(expressLayouts)
     .set("view engine", "ejs")
     .set("views", path.join(__dirname, "/content"));
+    // .set("layout", "layouts/layout");
 
   app.get("/", checkSession, (_req, res) => {
     res.render("index", {
@@ -48,6 +49,7 @@ const createServer = (): express.Application => {
     });
   });
   app.use("/auth", authRoutes);
+  app.use(express.urlencoded({ extended: true }));
   app.use("/dashboard", dashboardRoutes);
   //Routes
   app.use("/issueApis", issueRoutes);
