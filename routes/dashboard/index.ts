@@ -7,10 +7,21 @@ const router = express.Router();
 
 const issueController= new IssueController()
 
-router.get("/", checkSession, (_req, res) => {
+router.get("/", checkSession, async (req, res) => {
+  const openIssues = await issueController.getAllIssuesList(req, 'open');
+  const openIssuesCount = openIssues.totalCount;
+  const closedIssues = await issueController.getAllIssuesList(req, 'close');
+  const closedIssuesCount = closedIssues.totalCount;
+  const openIssuesObj = JSON.stringify(openIssues);
+  const closedIssuesObj = JSON.stringify(closedIssues);
+
   res.render("index", {
     layout: "../layouts/dashboard",
     footer: true,
+    openIssuesCount,
+    closedIssuesCount,
+    openIssuesObj,
+    closedIssuesObj,
   });
 });
 
