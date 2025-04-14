@@ -8,6 +8,8 @@ import ExcelJS from "exceljs";
 import Issue from "../../database/issue.model";
 const issueService = new IssueService();
 class IssueController {
+  public issueService = issueService;
+
   /**
    * create issue
    * @param {*} req    HTTP request object

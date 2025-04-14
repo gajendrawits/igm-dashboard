@@ -569,6 +569,26 @@ class IssueService {
       throw err;
     }
   }
+
+  async getLastMonthIssuesCounts() {
+    const today = new Date();
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+    
+    const openIssuesLastMonth = await Issue.countDocuments({
+      created_at: { $lte: lastMonth.toISOString() },
+      issue_status: new RegExp('open', 'i')
+    });
+
+    const closedIssuesLastMonth = await Issue.countDocuments({
+      created_at: { $lte: lastMonth.toISOString() },
+      issue_status: new RegExp('close', 'i')
+    });
+
+    return {
+      openIssuesLastMonth,
+      closedIssuesLastMonth
+    };
+  }
 }
 
 export default IssueService;

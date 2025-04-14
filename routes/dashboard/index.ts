@@ -15,6 +15,16 @@ router.get("/", checkSession, async (req, res) => {
   const openIssuesObj = JSON.stringify(openIssues);
   const closedIssuesObj = JSON.stringify(closedIssues);
 
+  const lastMonthCounts = await issueController.issueService.getLastMonthIssuesCounts();
+  
+  const openIssuesPercentageChange = lastMonthCounts.openIssuesLastMonth === 0 
+    ? 0 
+    : ((openIssuesCount - lastMonthCounts.openIssuesLastMonth) / lastMonthCounts.openIssuesLastMonth * 100).toFixed(1);
+  
+  const closedIssuesPercentageChange = lastMonthCounts.closedIssuesLastMonth === 0 
+    ? 0 
+    : ((closedIssuesCount - lastMonthCounts.closedIssuesLastMonth) / lastMonthCounts.closedIssuesLastMonth * 100).toFixed(1);
+
   res.render("index", {
     layout: "../layouts/dashboard",
     footer: true,
@@ -22,6 +32,8 @@ router.get("/", checkSession, async (req, res) => {
     closedIssuesCount,
     openIssuesObj,
     closedIssuesObj,
+    openIssuesPercentageChange,
+    closedIssuesPercentageChange
   });
 });
 
