@@ -25,6 +25,9 @@ router.get("/", checkSession, async (req, res) => {
     ? 0 
     : ((closedIssuesCount - lastMonthCounts.closedIssuesLastMonth) / lastMonthCounts.closedIssuesLastMonth * 100).toFixed(1);
 
+  const categoryCounts = await issueController.issueService.getIssuesByCategory();
+  const totalIssues = categoryCounts.reduce((sum, cat) => sum + cat.count, 0);
+
   res.render("index", {
     layout: "../layouts/dashboard",
     footer: true,
@@ -33,7 +36,9 @@ router.get("/", checkSession, async (req, res) => {
     openIssuesObj,
     closedIssuesObj,
     openIssuesPercentageChange,
-    closedIssuesPercentageChange
+    closedIssuesPercentageChange,
+    categoryCounts,
+    totalIssues
   });
 });
 

@@ -589,6 +589,24 @@ class IssueService {
       closedIssuesLastMonth
     };
   }
+
+  async getIssuesByCategory() {
+    const categoryCounts = await Issue.aggregate([
+      {
+        $group: {
+          _id: { 
+            $ifNull: ["$category", "No Category"]
+          },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { count: -1 }
+      }
+    ]);
+
+    return categoryCounts;
+  }
 }
 
 export default IssueService;
