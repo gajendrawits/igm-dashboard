@@ -14,6 +14,7 @@ import {
   addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
   getIssueByOrderId,
+  getIssueByIssueId,
   // addOrUpdateIssueWithIssueId
 } from "../../utils/dbservice";
 
@@ -490,31 +491,29 @@ class IssueService {
 
   /**
    * get issue by transaction id
-   * @param {Object} transactionId
+   * @param {Object} issueId
    */
-  async getSingleIssue(transactionId: string) {
+  async getSingleIssue(issueId: string) {
     try {
-      if (!transactionId)
-        throw new Error("Issue not found with this transaction Id");
+      const issues = await getIssueByIssueId(issueId);
 
-      const issue: IssueProps = await getIssueByTransactionId(transactionId);
-
-      if (issue) {
-        logger.info("Issue found with transactionId: getSingleIssue")
-        return { issueExistance: true, issue };
+      if (issues) {
+        logger.info("Issue found with issueId: getSingleIssue")
+        return { totalCount: issues.length, issues };
       } else {
         
-        logger.info("Issue not found with transactionId: getSingleIssue")
+        logger.info("Issue not found with issueId: getSingleIssue")
         return { issueExistance: false };
       }
     } catch (err: any) {
      
       logger.info(
-        `facing issue in getting Single Issue by transaction_id, ${err}`
+        `facing issue in getting Single Issue by issueId, ${err}`
       );
       throw err;
     }
   }
+
   async getIssueByOrderID(orderID: string) {
     try {
       if (!orderID) return { message: "Issue not found with this orderID Id" };

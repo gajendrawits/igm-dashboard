@@ -74,6 +74,22 @@ router.get("/issue-closed", async (req, res) => {
   });
 });
 
+router.post("/issue-id", async (req, res) => {
+  const response = await issueController.getIssue(req);
+  const issues = JSON.stringify(response);
+  const totalCount = response.totalCount;
+
+  res.render("crud/products", {
+    layout: "../layouts/dashboard",
+    footer: false,
+    issues,
+    totalCount,
+    issueType: " ",
+    currentPage: req.query.pageNumber || 1,
+    limit: req.query.limit || 7,
+  });
+});
+
 router.get("/issue-all", (_req, res) => {
   const products = require("./data/products.json");
   res.render("crud/products", {

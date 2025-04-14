@@ -61,6 +61,20 @@ const getIssueByTransactionId = async (transactionId: string) => {
   } else return issue?.[0];
 };
 
+const getIssueByIssueId = async (issueId: string) => {
+  const issue: any = await IssueModel.find({
+    issueId: issueId,
+  });
+
+  if (!(issue || issue.length)) {
+    return {
+      status: 404,
+      name: "NO_RECORD_FOUND_ERROR",
+      message: "Record not found",
+    };
+  } else return issue;
+};
+
 const getIssueByOrderId = async (orderId: string) => {
   const issue: any = await IssueModel.find({
     "order_details.id": orderId,
@@ -84,5 +98,6 @@ export {
   addOrUpdateIssueWithtransactionId,
   getIssueByTransactionId,
   getIssueByOrderId,
+  getIssueByIssueId,
   // addOrUpdateIssueWithIssueId,
 };
