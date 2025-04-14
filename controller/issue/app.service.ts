@@ -547,8 +547,7 @@ class IssueService {
       if (issueStatus) {
         filter.issue_status = new RegExp(issueStatus, 'i');
       }
-
-      const issues = await Issue.find(filter).limit(limit).skip(skip);
+      const issues = await Issue.find(filter).sort({ created_at: 'desc' }).limit(limit).skip(skip);
       const totalCount = await Issue.countDocuments(filter);
       
       logger.info(`getAllIssuesList countDocuments ${JSON.stringify(issues)}`);

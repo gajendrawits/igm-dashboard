@@ -290,7 +290,7 @@ group: crud
                                 </div>
                                 <div>
                                     <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Updated at:</span>
-                                    <p class="text-sm text-gray-900 dark:text-white">${new Date(action.updated_at).toLocaleString('en-US', { hour12: true })}</p>
+                                    <p class="text-sm text-gray-900 dark:text-white">${new Date(action.updated_at).toLocaleString('en-IN', { hour12: true })}</p>
                                 </div>                                
                             </div>
                         `).join('');
@@ -326,7 +326,7 @@ group: crud
                         ].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
                         
                         const mostRecentUpdate = actions.length > 0 ? actions[0].updated_at : null;
-                        return mostRecentUpdate ? new Date(mostRecentUpdate).toLocaleString('en-US', { hour12: true }) : 'N/A';
+                        return mostRecentUpdate ? new Date(mostRecentUpdate).toLocaleString('en-IN', { hour12: true }) : 'N/A';
                     })()}
                 </div>
             </div>
@@ -403,10 +403,8 @@ group: crud
             
             const data = await response.json();
             
-            // Update the displayed status and last action time
             document.getElementById('current-status-display').textContent = data.issue_status || 'N/A';
             
-            // Update last action time
             const actions = [
                 ...data.issue_actions.complainant_actions, 
                 ...data.issue_actions.respondent_actions
@@ -414,12 +412,10 @@ group: crud
             
             const mostRecentUpdate = actions.length > 0 ? actions[0].updated_at : null;
             document.getElementById('last-action-time-display').textContent = 
-                mostRecentUpdate ? new Date(mostRecentUpdate).toLocaleString('en-US', { hour12: true }) : 'N/A';
+                mostRecentUpdate ? new Date(mostRecentUpdate).toLocaleString('en-IN', { hour12: true }) : 'N/A';
             
-            // Also update the currentIssue in memory
             currentIssue = data;
             
-            // Update the button's data-issue attribute if it exists
             const button = document.querySelector(`button[data-issue][onclick*="openFetchStatusDrawer('${issueId}')"]`);
             if (button) {
                 button.setAttribute('data-issue', JSON.stringify(data));
@@ -427,10 +423,8 @@ group: crud
             
         } catch (error) {
             console.error('Error fetching status:', error);
-            // You might want to show an error message to the user
             alert('Failed to fetch latest status. Please try again.');
         } finally {
-            // Restore button and hide loading indicator
             refreshBtn.classList.remove('hidden');
             loadingIndicator.classList.add('hidden');
         }

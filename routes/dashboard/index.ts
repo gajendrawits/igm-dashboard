@@ -74,4 +74,5 @@ router.get("/users", (_req, res) => {
     users,
   });
 });
+
 export default router;
