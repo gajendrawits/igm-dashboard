@@ -1,12 +1,28 @@
 import user from "../../database/userSchema"; // adjust path based on your structure
 import { Response, Request } from "express";
 import { UserType } from "../../database/userSchema";
+import bcrypt from 'bcrypt'
 
-export const createUser = async (req: Request, _res: Response) => {
+export const createUser = async (req: Request, res: Response) => {
   const { firstName, Email, Password, About } = req.body;
 
-  const newUser = new user({ firstName, Email, Password, About });
-  await newUser.save();
+  try {
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(Password, 10); // 10 is the salt rounds
+
+    const newUser = new user({
+      firstName,
+      Email,
+      Password: hashedPassword,
+      About,
+    });
+
+    await newUser.save();
+    // res.status(201).json({ message: "User created successfully." });
+  } catch (err) {
+    console.error("Error creating user:", err);
+    res.status(500).json({ message: "Failed to create user." });
+  }
 };
 
 export const listUsers = async (): Promise<UserType[]> => {
@@ -50,27 +66,16 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteuser = async (req: Request): Promise<{
-  success: boolean;
-  message: string;
-}> => {
+export const deleteUserByEmail = async (Email: string) => {
   try {
-    const { Email } = req.body;
-
-    if (!Email) {
-      return { success: false, message: 'Email is required' };
-    }
-
     const deletedUser = await user.findOneAndDelete({ Email });
 
     if (!deletedUser) {
-      return { success: false, message: 'User not found' };
+      throw new Error("User not found.");
     }
 
-    console.log(`Deleted user: ${Email}`);
-    return { success: true, message: 'User deleted successfully' };
+    return deletedUser;
   } catch (error) {
-    console.error('Error deleting user:', error);
-    return { success: false, message: 'Server error' };
+    throw error;
   }
 };
