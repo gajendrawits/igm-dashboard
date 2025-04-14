@@ -21,6 +21,8 @@ const createServer = (): express.Application => {
   // loadEnvVariables();
   // Body parsing Middleware
   app.use(express.json({ limit: "50mb" }));
+  app.use(express.json()); // For parsing application/json
+  app.use(express.urlencoded({ extended: true }));
   app.use(bodyParser.json());
   app.use(express.urlencoded({ extended: true, limit: "50mb" }));
   app.use(cors());
@@ -40,7 +42,7 @@ const createServer = (): express.Application => {
     .use(expressLayouts)
     .set("view engine", "ejs")
     .set("views", path.join(__dirname, "/content"));
-    // .set("layout", "layouts/layout");
+  // .set("layout", "layouts/layout");
 
   app.get("/", checkSession, (_req, res) => {
     res.render("index", {

@@ -66,15 +66,7 @@ router.get("/users", checkSession, async (_req, res) => {
 
 router.post("/createuser", checkSession, async (req, res) => {
   try {
-    await createUser(req, res); // save new user
-
-    const users = await listUsers(); // fetch updated user list
-
-    res.render("crud/users", {
-      layout: "../layouts/dashboard",
-      footer: false,
-      users, // ✅ pass updated users here
-    });
+    await createUser(req, res); // `createUser` handles redirect
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);
     res.status(500).send("Error creating user: " + errMsg);

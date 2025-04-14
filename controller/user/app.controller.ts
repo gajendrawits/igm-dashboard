@@ -7,21 +7,23 @@ export const createUser = async (req: Request, res: Response) => {
   const { firstName, Email, Password, About } = req.body;
 
   try {
-    // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(Password, 10); // 10 is the salt rounds
+    const normalizedEmail = Email.toLowerCase();
+    const hashedPassword = await bcrypt.hash(Password, 10);
 
     const newUser = new user({
       firstName,
-      Email,
+      Email: normalizedEmail,
       Password: hashedPassword,
       About,
     });
 
     await newUser.save();
-    // res.status(201).json({ message: "User created successfully." });
+
+    // Redirect after successful creation
+    return res.redirect("/dashboard/users");; // or wherever you show the user list
   } catch (err) {
     console.error("Error creating user:", err);
-    res.status(500).json({ message: "Failed to create user." });
+    return res.status(500).json({ message: "Failed to create user." });
   }
 };
 
