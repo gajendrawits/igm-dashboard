@@ -2061,6 +2061,9 @@ input:checked + .toggle-bg {
 .pt-9 {
   padding-top: 2.25rem;
 }
+.pr-3 {
+  padding-right: 0.75rem;
+}
 .text-left {
   text-align: left;
 }
@@ -2761,6 +2764,11 @@ input:checked + .toggle-bg {
   background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
 }
 
+.hover\:bg-green-700:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(4 108 78 / var(--tw-bg-opacity, 1));
+}
+
 .hover\:bg-indigo-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(81 69 205 / var(--tw-bg-opacity, 1));
@@ -2930,6 +2938,11 @@ input:checked + .toggle-bg {
 .focus\:ring-gray-50:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(249 250 251 / var(--tw-ring-opacity, 1));
+}
+
+.focus\:ring-green-300:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(132 225 188 / var(--tw-ring-opacity, 1));
 }
 
 .focus\:ring-indigo-500:focus {
@@ -3711,6 +3724,34 @@ input:checked + .toggle-bg {
 
   .lg\:mt-1\.5 {
     margin-top: 0.375rem;
+  }
+
+  .lg\:ml-60 {
+    margin-left: 15rem;
+  }
+
+  .lg\:ml-\[\] {
+    margin-left: ;
+  }
+
+  .lg\:ml-\[230px\] {
+    margin-left: 230px;
+  }
+
+  .lg\:ml-\[230px\DF\] {
+    margin-left: 230pxß;
+  }
+
+  .lg\:ml-\[234px\] {
+    margin-left: 234px;
+  }
+
+  .lg\:ml-\[236px\] {
+    margin-left: 236px;
+  }
+
+  .lg\:ml-\[23px\] {
+    margin-left: 23px;
   }
 
   .lg\:block {
