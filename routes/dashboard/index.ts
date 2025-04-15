@@ -106,6 +106,26 @@ router.post("/issue-id", async (req, res) => {
     issueType: " ",
     currentPage: req.query.pageNumber || 1,
     limit: req.query.limit || 7,
+    showPagination: false
+  });
+});
+
+router.get("/issue-from-to", async (req, res) => {
+  const response = await issueController.getIssuesFromTo(req);
+  const issues = JSON.stringify(response);
+  const totalCount = response.totalCount;
+  console.log(totalCount);
+
+  res.render("crud/products", {
+    layout: "../layouts/dashboard",
+    footer: false,
+    issues,
+    totalCount,
+    issueType: " ",
+    from: req.query.fromDate,
+    to: req.query.toDate,
+    currentPage: req.query.pageNumber || 1,
+    limit: req.query.limit || 7,
   });
 });
 

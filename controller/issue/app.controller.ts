@@ -75,6 +75,28 @@ class IssueController {
 
   }
 
+  async getIssuesFromTo(req: Request) {
+    const from = req.query.fromDate as string;
+    const to = req.query.toDate as string;
+    const limit = parseInt(req.query.limit as string, 10) || 7;
+    const pageNumber = parseInt(req.query.pageNumber as string, 10) || 1;
+
+    // logger.info(
+    //   `getIssuesFromTo API (Controllers):  from ${from}, to ${to}`
+    // );
+
+    const response: any = await issueService.getIssuesFromTo({
+      limit: limit,
+      pageNumber: pageNumber,
+    }, from, to)
+
+    // logger.info(`getIssuesFromTo response ${JSON.stringify(response)}`);
+    // logger.info(`getIssuesFromTo response ${response}`);
+
+    return response;        
+
+  }
+
   async getAllIssuesList(req: Request, issueStatus?: string) {
     const limit = parseInt(req.query.limit as string, 10) || 7;
     const pageNumber = parseInt(req.query.pageNumber as string, 10) || 1;

@@ -1,3 +1,4 @@
+import { IParamProps } from "interfaces/issue";
 import IssueModel from "../database/issue.model";
 import { logger } from "../shared/logger";
 
@@ -75,6 +76,37 @@ const getIssueByIssueId = async (issueId: string) => {
   } else return issue;
 };
 
+const getIssuesFromTo = async (params: IParamProps, from: string, to: string) => {
+  let { limit = 7, pageNumber = 1 } = params;
+
+  let skip = (pageNumber - 1) * limit;
+
+  const issues: any = await IssueModel.find({
+    $and: [
+      {
+        created_at: {
+          $gt: (new Date(from)).toISOString()
+        }
+      },
+      {
+        created_at: {
+          $lt: (new Date(to)).toISOString()
+        }
+      }
+    ]
+  }).sort({ created_at: 'desc' }).limit(limit).skip(skip);
+
+  if (!issues || !issues.length) {
+    return {
+      status: 404,
+      name: "NO_RECORD_FOUND_ERROR",
+      message: "Record not found",
+    };
+  } else {
+    return issues;
+  }
+};
+
 const getIssueByOrderId = async (orderId: string) => {
   const issue: any = await IssueModel.find({
     "order_details.id": orderId,
@@ -99,5 +131,6 @@ export {
   getIssueByTransactionId,
   getIssueByOrderId,
   getIssueByIssueId,
+  getIssuesFromTo,
   // addOrUpdateIssueWithIssueId,
 };

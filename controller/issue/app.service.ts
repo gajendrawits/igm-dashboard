@@ -15,6 +15,7 @@ import {
   getIssueByTransactionId,
   getIssueByOrderId,
   getIssueByIssueId,
+  getIssuesFromTo,
   // addOrUpdateIssueWithIssueId
 } from "../../utils/dbservice";
 
@@ -509,6 +510,27 @@ class IssueService {
      
       logger.info(
         `facing issue in getting Single Issue by issueId, ${err}`
+      );
+      throw err;
+    }
+  }
+
+  async getIssuesFromTo(params: IParamProps, from: string, to: string) {
+    try {
+      const issues = await getIssuesFromTo(params, from, to);
+
+      if (issues) {
+        logger.info("Issue found with issueId: getIssuesFromTo")
+        return { totalCount: issues.length, issues };
+      } else {
+        
+        logger.info("Issue not found with issueId: getIssuesFromTo")
+        return { issueExistance: false };
+      }
+    } catch (err: any) {
+     
+      logger.info(
+        `facing issue in getting Issues by from ${from} to to ${to}, ${err}`
       );
       throw err;
     }
