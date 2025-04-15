@@ -14,7 +14,7 @@ export interface UserType extends mongoose.Document {
     LastName: {type: String, required: false},
     Email: { type: String, required: true },
     Password: { type: String, required: true },
-    About: { type: String, required: false },
+    About: { type: String, required: true },
   });
   
   const user = mongoose.model<UserType>("User", userSchema);
