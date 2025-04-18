@@ -81,17 +81,17 @@ class IssueController {
     const limit = parseInt(req.query.limit as string, 10) || 7;
     const pageNumber = parseInt(req.query.pageNumber as string, 10) || 1;
 
-    // logger.info(
-    //   `getIssuesFromTo API (Controllers):  from ${from}, to ${to}`
-    // );
+    logger.info(
+      `getIssuesFromTo API (Controllers):  from ${from}, to ${to}`
+    );
 
     const response: any = await issueService.getIssuesFromTo({
       limit: limit,
       pageNumber: pageNumber,
     }, from, to)
 
-    // logger.info(`getIssuesFromTo response ${JSON.stringify(response)}`);
-    // logger.info(`getIssuesFromTo response ${response}`);
+    logger.info(`getIssuesFromTo response ${JSON.stringify(response)}`);
+    logger.info(`getIssuesFromTo response ${response}`);
 
     return response;        
 

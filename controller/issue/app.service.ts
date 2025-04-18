@@ -519,9 +519,24 @@ class IssueService {
     try {
       const issues = await getIssuesFromTo(params, from, to);
 
+      const totalCount = await Issue.countDocuments({
+        $and: [
+          {
+            created_at: {
+              $gt: (new Date(from)).toISOString()
+            }
+          },
+          {
+            created_at: {
+              $lt: (new Date(to)).toISOString()
+            }
+          }
+        ]
+      });
+
       if (issues) {
         logger.info("Issue found with issueId: getIssuesFromTo")
-        return { totalCount: issues.length, issues };
+        return { totalCount: totalCount, issues };
       } else {
         
         logger.info("Issue not found with issueId: getIssuesFromTo")
