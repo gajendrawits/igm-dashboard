@@ -45,10 +45,7 @@ const createServer = (): express.Application => {
   // .set("layout", "layouts/layout");
 
   app.get("/", checkSession, (_req, res) => {
-    res.render("index", {
-      layout: path.join(__dirname, "/layouts/dashboard"),
-      footer: true,
-    });
+    res.redirect("/dashboard")
   });
   app.use("/auth", authRoutes);
   app.use(express.urlencoded({ extended: true }));

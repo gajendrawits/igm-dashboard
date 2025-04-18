@@ -66,7 +66,7 @@ router.get("/issue-open", async (req, res) => {
   const issues = JSON.stringify(response);
   const totalCount = response.totalCount;
 
-  res.render("crud/products", {
+  res.render("crud/issues", {
     layout: "../layouts/dashboard",
     footer: false,
     issues,
@@ -82,7 +82,7 @@ router.get("/issue-closed", async (req, res) => {
   const issues = JSON.stringify(response);
   const totalCount = response.totalCount;
 
-  res.render("crud/products", {
+  res.render("crud/issues", {
     layout: "../layouts/dashboard",
     footer: false,
     issues,
@@ -98,7 +98,7 @@ router.post("/issue-id", async (req, res) => {
   const issues = JSON.stringify(response);
   const totalCount = response.totalCount;
 
-  res.render("crud/products", {
+  res.render("crud/issues", {
     layout: "../layouts/dashboard",
     footer: false,
     issues,
@@ -116,7 +116,7 @@ router.get("/issue-from-to", async (req, res) => {
   const totalCount = response.totalCount;
   console.log(totalCount);
 
-  res.render("crud/products", {
+  res.render("crud/issues", {
     layout: "../layouts/dashboard",
     footer: false,
     issues,
@@ -131,7 +131,7 @@ router.get("/issue-from-to", async (req, res) => {
 
 router.get("/issue-all", (_req, res) => {
   const products = require("./data/products.json");
-  res.render("crud/products", {
+  res.render("crud/issues", {
     layout: "../layouts/dashboard",
     footer: false,
     products,
